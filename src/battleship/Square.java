@@ -3,23 +3,28 @@ package battleship;
 /**
  * Created by amin on 11/29/14.
  */
-class Square {
+class Square
+{
     private boolean destroyed;
     private Weaponry weaponry;
 
-    public boolean isDestroyed() {
+    public boolean isDestroyed()
+    {
         return destroyed;
     }
 
-    public void setDestroyed(boolean destroyed) {
+    public void setDestroyed(boolean destroyed)
+    {
         this.destroyed = destroyed;
     }
 
-    public Weaponry getWeaponry() {
+    public Weaponry getWeaponry()
+    {
         return weaponry;
     }
 
-    public void setWeaponry(Weaponry weaponry) {
+    public void setWeaponry(Weaponry weaponry)
+    {
         this.weaponry = weaponry;
     }
 }

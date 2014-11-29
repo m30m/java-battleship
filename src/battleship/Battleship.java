@@ -3,14 +3,14 @@ package battleship;
 /**
  * Created by amin on 11/29/14.
  */
-class Battleship extends Weaponry implements Placable
+class Battleship extends PlacableWeaponry
 {
     private final int length;
     private boolean isVertical;
 
-    Battleship(int id, int length, boolean isVertical)
+    Battleship(int id, int x, int y, Square[][] map, int length, boolean isVertical)
     {
-        super(id, length);
+        super(id, length, x, y, map);
         this.length = length;
         this.isVertical = isVertical;
     }
