@@ -6,7 +6,7 @@ package battleship;
 class Square
 {
     private boolean destroyed;
-    private Weaponry weaponry;
+    private PlacableWeaponry placableWeaponry;
 
     public boolean isDestroyed()
     {
@@ -18,13 +18,25 @@ class Square
         this.destroyed = destroyed;
     }
 
-    public Weaponry getWeaponry()
+    public PlacableWeaponry getPlacableWeaponry()
     {
-        return weaponry;
+        return placableWeaponry;
     }
 
-    public void setWeaponry(Weaponry weaponry)
+    public void setPlacableWeaponry(PlacableWeaponry placableWeaponry)
     {
-        this.weaponry = weaponry;
+        this.placableWeaponry = placableWeaponry;
+    }
+
+    void attacked()
+    {
+        if (isDestroyed())//Why should you destroy it again???
+            return;
+        setDestroyed(true);
+        if (placableWeaponry != null)
+        {
+            placableWeaponry.attacked();
+            setPlacableWeaponry(null);
+        }
     }
 }

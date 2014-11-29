@@ -5,8 +5,13 @@ package battleship;
  */
 public class Player
 {
-    Square[][] map;
-    Player opponent;
+    private Square[][] map;
+    private Player opponent;
+
+    public Square[][] getMap()
+    {
+        return map;
+    }
 
     void radarAttack(int x, int y)
     {
@@ -15,11 +20,11 @@ public class Player
 
     void aircraftAttack(int x)
     {
-        //TODO
+
     }
 
     void normalAttack(int x, int y)
     {
-        //TODO
+        opponent.getMap()[x][y].attacked();
     }
 }
