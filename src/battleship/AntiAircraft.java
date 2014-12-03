@@ -5,8 +5,8 @@ package battleship;
  */
 class AntiAircraft extends PlacableWeaponry
 {
-    AntiAircraft(int id,Player owner, int x, Square[][] map)
+    AntiAircraft(int id,Player owner, int x)
     {
-        super(id, 1,owner, x, 0, map);
+        super(id, 1,owner, x, 0);
     }
 }

@@ -8,9 +8,9 @@ class Battleship extends PlacableWeaponry
     private final int length;
     private boolean isVertical;
 
-    Battleship(int id,Player owner, int x, int y, Square[][] map, int length, boolean isVertical)
+    Battleship(int id,Player owner, int x, int y, int length, boolean isVertical)
     {
-        super(id, length,owner, x, y, map);
+        super(id, length,owner, x, y);
         this.length = length;
         this.isVertical = isVertical;
     }
@@ -39,5 +39,12 @@ class Battleship extends PlacableWeaponry
                 map[i][y].setPlacableWeaponry(this);
         }
         return true;
+    }
+
+    @Override
+    public void attacked(int x,int y)
+    {
+        super.attacked(x, y);
+        getOwner().getRunner().explode(getOwner(), x, y);
     }
 }

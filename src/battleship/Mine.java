@@ -5,15 +5,16 @@ package battleship;
  */
 class Mine extends PlacableWeaponry
 {
-    Mine(int id, Player owner, int x, int y, Square[][] map)
+    Mine(int id, Player owner, int x, int y)
     {
-        super(id, 1, owner, x, y, map);
+        super(id, 1, owner, x, y);
     }
 
     @Override
-    public void attacked()
+    public void attacked(int x,int y)
     {
-        super.attacked();
-        getOwner().normalAttack(getX(), getY());
+        super.attacked(x, y);
+        getOwner().getRunner().mineTrap(getOwner(), x, y);
+        getOwner().normalAttack(x, y);
     }
 }

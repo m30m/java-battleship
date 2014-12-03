@@ -8,12 +8,12 @@ abstract class PlacableWeaponry extends Weaponry
     private int x;
     private int y;
 
-    public PlacableWeaponry(int id, int health,Player owner, int x, int y, Square[][] map)
+    public PlacableWeaponry(int id, int health,Player owner, int x, int y)
     {
         super(id, health,owner);
         this.x = x;
         this.y = y;
-        place(x, y, map);
+        place(x, y, owner.getMap());
     }
 
     public int getX()
@@ -37,7 +37,7 @@ abstract class PlacableWeaponry extends Weaponry
         return true;
     }
 
-    void attacked()
+    void attacked(int x,int y)
     {
         setHealth(getHealth() - 1);
     }

@@ -8,6 +8,12 @@ class Square
     private boolean destroyed;
     private PlacableWeaponry placableWeaponry;
 
+    Square()
+    {
+        destroyed = false;
+        placableWeaponry = null;
+    }
+
     public boolean isDestroyed()
     {
         return destroyed;
@@ -28,14 +34,14 @@ class Square
         this.placableWeaponry = placableWeaponry;
     }
 
-    void attacked()
+    void attacked(int x, int y)
     {
         if (isDestroyed())//Why should you destroy it again???
             return;
         setDestroyed(true);
         if (placableWeaponry != null)
         {
-            placableWeaponry.attacked();
+            placableWeaponry.attacked(x, y);
             setPlacableWeaponry(null);
         }
     }
