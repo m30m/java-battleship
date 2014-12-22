@@ -4,7 +4,7 @@ import battleship.Player;
 import battleship.Runner;
 
 /**
- * Created by amin on 11/29/14.
+ * Created by amin on 11/29/14. this is changed
  */
 public class ConsoleRunner extends Runner
 {
