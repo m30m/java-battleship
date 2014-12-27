@@ -43,7 +43,7 @@ public class Player
         return map;
     }
 
-    void radarAttack(int x, int y)
+    public void radarAttack(int x, int y)
     {
         for(int i=Math.max(0, x - 1);i<Math.min(x + 2, map.length);i++)
             for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++)
@@ -55,7 +55,7 @@ public class Player
 
     }
 
-    void aircraftAttack(int x)
+    public void aircraftAttack(int x)
     {
         if(map[x][0].getPlacableWeaponry() instanceof AntiAircraft ) //TODO check if its null
         {
@@ -67,7 +67,7 @@ public class Player
             normalAttack(x,i);
     }
 
-    void normalAttack(int x, int y)
+    public void normalAttack(int x, int y)
     {
         opponent.getMap()[x][y].attacked(x, y);
     }

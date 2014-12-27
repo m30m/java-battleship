@@ -1,5 +1,7 @@
 package battleship;
 
+import battleship.console.ConsoleRunner;
+
 /**
  * Created by amin on 11/29/14.
  */
@@ -11,9 +13,17 @@ abstract public class Runner
 //    }
 //    void placeAircraft(Player player,int x,int y,int length,boolean isVertical)
 
-    abstract void mineTrap(Player player, int x, int y);
+    protected Player teamA,teamB;
 
-    abstract void explode(Player player,int x, int y);
+    protected abstract void mineTrap(Player player, int x, int y);
 
-    abstract void aircraftUnsuccessful(Player player);
+    protected abstract void explode(Player player, int x, int y);
+
+    protected abstract void aircraftUnsuccessful(Player player);
+    protected abstract void run();
+    public static void main(String[] args)
+    {
+        Runner runner=new ConsoleRunner();
+        runner.run();
+    }
 }

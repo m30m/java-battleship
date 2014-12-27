@@ -3,9 +3,9 @@ package battleship;
 /**
  * Created by amin on 11/29/14.
  */
-class Mine extends PlacableWeaponry
+public class Mine extends PlacableWeaponry
 {
-    Mine(int id, Player owner, int x, int y)
+    public Mine(int id, Player owner, int x, int y)
     {
         super(id, 1, owner, x, y);
     }
