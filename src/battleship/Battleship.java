@@ -46,6 +46,6 @@ public class Battleship extends PlacableWeaponry
     public void attacked(int x,int y)
     {
         super.attacked(x, y);
-        getOwner().getRunner().explode(getOwner(), x, y);
+        getOwner().getRunner().explode(getOwner().getOpponent(), x, y);
     }
 }

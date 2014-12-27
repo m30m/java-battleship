@@ -1,5 +1,7 @@
 package battleship;
 
+import battleship.console.ConsoleRunner;
+
 /**
  * Created by amin on 11/29/14.
  */
@@ -47,28 +49,30 @@ public class Player
     {
         for(int i=Math.max(0, x - 1);i<Math.min(x + 2, map.length);i++)
             for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++)
-                if(map[i][j].getPlacableWeaponry() instanceof Battleship)
-                {
+                if(getOpponent().getMap()[i][j].getPlacableWeaponry() instanceof Battleship)
                     getRunner().radarDetect(this,i,j);
-                    return;
-                }
 
     }
 
-    public void aircraftAttack(int x)
+    public void aircraftAttack(int y)
     {
-        if(map[x][0].getPlacableWeaponry() instanceof AntiAircraft )
+        if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
         {
-            normalAttack(x,0);
+            normalAttack(0,y);
             getRunner().aircraftUnsuccessful(this);
             return;
         }
-        for(int i=0;i<map[x].length;i++)
-            normalAttack(x,i);
+        for(int i=0;i<map.length;i++)
+            normalAttack(i,y);
     }
 
     public void normalAttack(int x, int y)
     {
         opponent.getMap()[x][y].attacked(x, y);
+    }
+
+    public Player getOpponent()
+    {
+        return opponent;
     }
 }

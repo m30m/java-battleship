@@ -5,9 +5,16 @@ package battleship;
  */
 public class AntiAircraft extends PlacableWeaponry
 {
-    public AntiAircraft(int id,Player owner, int x)
+    public AntiAircraft(int id, Player owner, int y)
     {
-        super(id, 1,owner, x, 0);
-        place(x, 0, owner.getMap());
+        super(id, 1, owner, 0, y);
+        place(0, y, owner.getMap());
+    }
+
+    @Override
+    public void attacked(int x, int y)
+    {
+        super.attacked(x, y);
+        getOwner().getRunner().explodeAntiaircraft(getOwner(), x, y);
     }
 }

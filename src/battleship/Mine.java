@@ -15,7 +15,7 @@ public class Mine extends PlacableWeaponry
     public void attacked(int x,int y)
     {
         super.attacked(x, y);
-        getOwner().getRunner().mineTrap(getOwner(), x, y);
         getOwner().normalAttack(x, y);
+        getOwner().getRunner().mineTrap(getOwner().getOpponent(), x, y);
     }
 }

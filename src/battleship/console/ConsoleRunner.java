@@ -11,29 +11,29 @@ import java.util.TreeMap;
  */
 public class ConsoleRunner extends Runner
 {
-
     TreeMap<Integer, ArrayList<String>> tm = new TreeMap<Integer, ArrayList<String>>();
     private int currentTime = 0;
-
     @Override
     protected void run()
     {
         Scanner scanner = new Scanner(System.in);
         int width = scanner.nextInt();
         int height = scanner.nextInt();
-        System.out.println("Hey there");
         teamA = new Player("a", this, width, height);
         teamB = new Player("b", this, width, height);
         teamA.setOpponent(teamB);
         teamB.setOpponent(teamA);
         scanner.nextLine();
+        System.out.println("Player number 1, please build your map");
         readPlayerMap(scanner, teamA);
+        System.out.println("Player number 2, please build your map");
         readPlayerMap(scanner, teamB);
         readActions(scanner);
     }
 
     void readActions(Scanner scanner)
     {
+        int teamATime=0,teamBTime=0;
         while (scanner.hasNext())
         {
             String str = scanner.nextLine();
@@ -42,7 +42,7 @@ public class ConsoleRunner extends Runner
                 Scanner tmp = new Scanner(str);
                 tmp.next();
                 currentTime += tmp.nextInt();
-                while (!tm.isEmpty() && tm.firstKey() < currentTime)
+                while (!tm.isEmpty() && tm.firstKey() <= currentTime)
                 {
                     ArrayList<String> actions = tm.get(tm.firstKey());
                     for (String action : actions)
@@ -57,7 +57,17 @@ public class ConsoleRunner extends Runner
                     timeToExecute = 1;
                 else//radar and aircraft
                     timeToExecute = 2;
-                int finalTime = currentTime + timeToExecute;
+                int finalTime =0 ;
+                if(str.contains("team a"))
+                {
+                    teamATime += timeToExecute;
+                    finalTime=teamATime;
+                }
+                else
+                {
+                    teamBTime += timeToExecute;
+                    finalTime=teamBTime;
+                }
                 if (tm.get(finalTime) == null)
                     tm.put(finalTime, new ArrayList<String>());
                 tm.get(finalTime).add(str);
@@ -80,12 +90,15 @@ public class ConsoleRunner extends Runner
         if (attackType.equals("aircraft"))
         {
             int row = tmp.nextInt();
+            row--;
             executor.aircraftAttack(row);
         }
         else
         {
             int x = tmp.nextInt();
             int y = tmp.nextInt();
+            x--;
+            y--;
             if (action.contains("attack"))
                 executor.normalAttack(x, y);
             else//radar
@@ -115,34 +128,49 @@ public class ConsoleRunner extends Runner
             {
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
+                x--;
+                y--;
                 new Battleship(0, player, x, y,
                         lengthOfBattleship[numOfBattleship], scanner.next().equals("V"));
                 numOfBattleship++;
             }
             else if (equipment.equals("anti aircraft"))
-                new AntiAircraft(0, player, scanner.nextInt());
+                new AntiAircraft(0, player, scanner.nextInt() - 1);
             else
-                new Mine(0, player, scanner.nextInt(), scanner.nextInt());
-		}
-	}
+                new Mine(0, player, scanner.nextInt() - 1, scanner.nextInt() - 1);
+        }
+    }
 	
     public void mineTrap(Player player, int x, int y)
     {
+        x++;
+        y++;
         System.out.println("team "+player.getName()+" mine trap "+x+","+y);
     }
     
     public void radarDetect(Player player, int x, int y)
     {
-    	System.out.println("team "+player.getName()+" detected "+x+","+y);
+        x++;
+        y++;
+        System.out.println("team "+player.getName()+" detected "+x+","+y);
     }
 
     public void explode(Player player,int x, int y)
     {
+        x++;
+        y++;
         System.out.println("team "+player.getName()+" explode "+x+","+y);
     }
 
     public void aircraftUnsuccessful(Player player)
     {
         System.out.println("aircraft unsuccessful");
+    }
+
+    public void explodeAntiaircraft(Player player, int x, int y)
+    {
+        x++;
+        y++;
+        System.out.println("team " + player.getName() + " anti aircraft row " + y + " exploded");
     }
 }

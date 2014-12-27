@@ -21,6 +21,7 @@ abstract public class Runner
 
     protected abstract void aircraftUnsuccessful(Player player);
     protected abstract void radarDetect(Player player, int x, int y);
+    protected abstract void explodeAntiaircraft(Player player, int x, int y);
     protected abstract void run();
     public static void main(String[] args)
     {
