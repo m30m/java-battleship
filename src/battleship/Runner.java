@@ -20,10 +20,12 @@ abstract public class Runner
     protected abstract void explode(Player player, int x, int y);
 
     protected abstract void aircraftUnsuccessful(Player player);
+    protected abstract void radarDetect(Player player, int x, int y);
     protected abstract void run();
     public static void main(String[] args)
     {
         Runner runner=new ConsoleRunner();
         runner.run();
     }
+    
 }

@@ -57,7 +57,7 @@ public class Player
 
     public void aircraftAttack(int x)
     {
-        if(map[x][0].getPlacableWeaponry() instanceof AntiAircraft ) //TODO check if its null
+        if(map[x][0].getPlacableWeaponry() instanceof AntiAircraft )
         {
             normalAttack(x,0);
             getRunner().aircraftUnsuccessful(this);

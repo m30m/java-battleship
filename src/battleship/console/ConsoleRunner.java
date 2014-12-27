@@ -1,5 +1,6 @@
 package battleship.console;
 
+import Player;
 import battleship.*;
 
 import java.util.ArrayList;
@@ -118,6 +119,11 @@ public class ConsoleRunner extends Runner
     public void mineTrap(Player player, int x, int y)
     {
         System.out.println("team "+player.getName()+" mine trap "+x+","+y);
+    }
+    
+    public void radarDetect(Player player, int x, int y)
+    {
+    	System.out.println("team "+player.getName()+" detected "+x+","+y);
     }
 
     public void explode(Player player,int x, int y)
