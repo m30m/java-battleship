@@ -13,6 +13,8 @@ public class ConsoleRunner extends Runner
 {
     TreeMap<Integer, ArrayList<String>> tm = new TreeMap<Integer, ArrayList<String>>();
     private int currentTime = 0;
+    public static boolean airTof;
+
     @Override
     protected void run()
     {
@@ -46,7 +48,20 @@ public class ConsoleRunner extends Runner
                 {
                     ArrayList<String> actions = tm.get(tm.firstKey());
                     for (String action : actions)
+                    {
                         executeAction(action);
+                        if (teamA.isLost())
+                        {
+                            System.out.println("team b wins");
+                            return;
+                        }
+                        if (teamB.isLost())
+                        {
+                            System.out.println("team a wins");
+                            return;
+                        }
+
+                    }
                     tm.remove(tm.firstKey());
                 }
             }
@@ -171,6 +186,7 @@ public class ConsoleRunner extends Runner
     {
         x++;
         y++;
-        System.out.println("team " + player.getName() + " anti aircraft row " + y + " exploded");
+        if(!airTof)
+            System.out.println("team " + player.getName() + " anti aircraft row " + y + " exploded");
     }
 }

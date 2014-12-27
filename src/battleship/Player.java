@@ -18,6 +18,8 @@ public class Player
 
     private Runner runner;
 
+    private int health;
+
     public String getName()
     {
         return name;
@@ -32,6 +34,7 @@ public class Player
 
     public Player(String name, Runner runner, int width,int height)
     {
+        this.health = 16;
         this.name=name;
         this.runner=runner;
         map=new Square[width][height];
@@ -58,8 +61,10 @@ public class Player
     {
         if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
         {
+            ConsoleRunner.airTof = true;
             normalAttack(0,y);
             getRunner().aircraftUnsuccessful(this);
+            ConsoleRunner.airTof = false;
             return;
         }
         for(int i=0;i<map.length;i++)
@@ -74,5 +79,15 @@ public class Player
     public Player getOpponent()
     {
         return opponent;
+    }
+
+    public void decreaseHealth()
+    {
+        health--;
+    }
+
+    public boolean isLost()
+    {
+        return health <= 0;
     }
 }
