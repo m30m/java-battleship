@@ -49,7 +49,7 @@ public class Player
             for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++)
                 if(map[i][j].getPlacableWeaponry() instanceof Battleship)
                 {
-                    //TODO
+                    getRunner().radarDetect(this,i,j);
                     return;
                 }
 

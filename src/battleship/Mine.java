@@ -8,6 +8,7 @@ public class Mine extends PlacableWeaponry
     public Mine(int id, Player owner, int x, int y)
     {
         super(id, 1, owner, x, y);
+        place(x, y, owner.getMap());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package battleship.console;
 
-import Player;
 import battleship.*;
 
 import java.util.ArrayList;
@@ -22,8 +21,12 @@ public class ConsoleRunner extends Runner
         Scanner scanner = new Scanner(System.in);
         int width = scanner.nextInt();
         int height = scanner.nextInt();
-        teamA = new Player("team a", this, width, height);
-        teamB = new Player("team b", this, width, height);
+        System.out.println("Hey there");
+        teamA = new Player("a", this, width, height);
+        teamB = new Player("b", this, width, height);
+        teamA.setOpponent(teamB);
+        teamB.setOpponent(teamA);
+        scanner.nextLine();
         readPlayerMap(scanner, teamA);
         readPlayerMap(scanner, teamB);
         readActions(scanner);
@@ -31,31 +34,34 @@ public class ConsoleRunner extends Runner
 
     void readActions(Scanner scanner)
     {
-        String str = scanner.nextLine();
-        if (str.contains("go"))
+        while (scanner.hasNext())
         {
-            Scanner tmp = new Scanner(str);
-            tmp.next();
-            currentTime += tmp.nextInt();
-            while (!tm.isEmpty() && tm.firstKey() < currentTime)
+            String str = scanner.nextLine();
+            if (str.contains("go"))
             {
-                ArrayList<String> actions = tm.get(tm.firstKey());
-                for (String action : actions)
-                    executeAction(action);
-                tm.remove(tm.firstKey());
+                Scanner tmp = new Scanner(str);
+                tmp.next();
+                currentTime += tmp.nextInt();
+                while (!tm.isEmpty() && tm.firstKey() < currentTime)
+                {
+                    ArrayList<String> actions = tm.get(tm.firstKey());
+                    for (String action : actions)
+                        executeAction(action);
+                    tm.remove(tm.firstKey());
+                }
             }
-        }
-        else
-        {
-            int timeToExecute;
-            if (str.contains("attack"))
-                timeToExecute = 1;
-            else//radar and aircraft
-                timeToExecute = 2;
-            int finalTime = currentTime + timeToExecute;
-            if (tm.get(finalTime) == null)
-                tm.put(finalTime, new ArrayList<String>());
-            tm.get(finalTime).add(str);
+            else
+            {
+                int timeToExecute;
+                if (str.contains("attack"))
+                    timeToExecute = 1;
+                else//radar and aircraft
+                    timeToExecute = 2;
+                int finalTime = currentTime + timeToExecute;
+                if (tm.get(finalTime) == null)
+                    tm.put(finalTime, new ArrayList<String>());
+                tm.get(finalTime).add(str);
+            }
         }
     }
 
@@ -66,6 +72,7 @@ public class ConsoleRunner extends Runner
             executor = teamA;
         else
             executor = teamB;
+        action = action.replace(',', ' ');
         Scanner tmp = new Scanner(action);
         tmp.next();//team
         tmp.next();//a or b
@@ -78,7 +85,6 @@ public class ConsoleRunner extends Runner
         else
         {
             int x = tmp.nextInt();
-            tmp.nextByte();
             int y = tmp.nextInt();
             if (action.contains("attack"))
                 executor.normalAttack(x, y);
@@ -90,29 +96,33 @@ public class ConsoleRunner extends Runner
 
     void readPlayerMap(Scanner input, Player player)
     {
-        String str=null, equipment="Battleship";
-		int[] lengthOfBattleship={4, 3, 3, 2, 2, 1, 1};
-		int numOfBattleship=0;
-        while (str == null || !str.equals("DONE"))
+        String str = null, equipment = "battleship";
+        int[] lengthOfBattleship = {4, 3, 3, 2, 2, 1, 1};
+        int numOfBattleship = 0;
+        while (true)
         {
             str = input.nextLine();
-            if(str.equals("Anti aircraft") || str.equals("Mine"))
-			{
-				equipment=str;
-				continue;
+            if (str.equals("done"))
+                break;
+            if (str.equals("anti aircraft") || str.equals("mine"))
+            {
+                equipment = str;
+                continue;
 			}
             str = str.replace(',', ' ');
             Scanner scanner = new Scanner(str);
-            if (equipment.equals("Battleship"))
+            if (equipment.equals("battleship"))
             {
-				new Battleship(0, player, scanner.nextInt(), scanner.nextInt(), 
-						lengthOfBattleship[numOfBattleship], scanner.nextByte()=='V');
-				numOfBattleship++;
-			}
-			else if(equipment.equals("Anti aircraft"))
-				new AntiAircraft(0, player, scanner.nextInt());
-			else
-				new Mine(0, player, scanner.nextInt(), scanner.nextInt());
+                int x = scanner.nextInt();
+                int y = scanner.nextInt();
+                new Battleship(0, player, x, y,
+                        lengthOfBattleship[numOfBattleship], scanner.next().equals("V"));
+                numOfBattleship++;
+            }
+            else if (equipment.equals("anti aircraft"))
+                new AntiAircraft(0, player, scanner.nextInt());
+            else
+                new Mine(0, player, scanner.nextInt(), scanner.nextInt());
 		}
 	}
 	

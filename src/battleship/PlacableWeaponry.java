@@ -13,7 +13,6 @@ abstract class PlacableWeaponry extends Weaponry
         super(id, health,owner);
         this.x = x;
         this.y = y;
-        place(x, y, owner.getMap());
     }
 
     public int getX()

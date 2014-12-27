@@ -13,6 +13,7 @@ public class Battleship extends PlacableWeaponry
         super(id, length,owner, x, y);
         this.length = length;
         this.isVertical = isVertical;
+        place(x, y, owner.getMap());
     }
 
     @Override
