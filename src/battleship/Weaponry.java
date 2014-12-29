@@ -9,6 +9,12 @@ abstract class Weaponry
     private int health;
     private Player owner;
 
+    /**
+     * constructor that gets the below arguments and creates a weaponry
+     * @param id the id of the weaponry
+     * @param health the health of the weaponry
+     * @param owner the owner of the weaponry
+     */
     public Weaponry(int id, int health, Player owner)
     {
         this.id = id;
@@ -23,7 +29,6 @@ abstract class Weaponry
 
     public int getId()
     {
-
         return id;
     }
 

@@ -8,6 +8,9 @@ class Square
     private boolean destroyed;
     private PlacableWeaponry placableWeaponry;
 
+    /**
+     * constructor that creates a new empty square
+     */
     Square()
     {
         destroyed = false;
@@ -33,10 +36,15 @@ class Square
     {
         this.placableWeaponry = placableWeaponry;
     }
-
+    
+    /**
+     * destroy the square if it had been attacked
+     * @param x the X coordinate of the square
+     * @param y the Y coordinate of the square
+     */
     void attacked(int x, int y)
     {
-        if (isDestroyed())//Why should you destroy it again???
+        if (isDestroyed()) //Why should you destroy it again???
             return;
         setDestroyed(true);
         if (placableWeaponry != null)

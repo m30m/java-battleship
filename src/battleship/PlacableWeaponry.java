@@ -9,12 +9,12 @@ abstract class PlacableWeaponry extends Weaponry
     private int y;
 
     /**
-     * constructor that gets the below arguments
-     * @param id id of the placable weaponary
-     * @param health health of of the placable weaponary
-     * @param owner owenr of the placable weaponary
-     * @param x
-     * @param y
+     * constructor that gets the below arguments and creates a placable weaponry
+     * @param id the id of the placable weaponry
+     * @param health the health of the placable weaponry
+     * @param owner the owner of the placable weaponry
+     * @param x the X coordinate of the placable weaponry
+     * @param y the Y coordinate of the placable weaponry
      */
     public PlacableWeaponry(int id, int health,Player owner, int x, int y)
     {
@@ -25,7 +25,6 @@ abstract class PlacableWeaponry extends Weaponry
 
     public int getX()
     {
-
         return x;
     }
 
@@ -37,10 +36,10 @@ abstract class PlacableWeaponry extends Weaponry
 
     /**
      * place the equipment in the square, if the square was empty
-     * @param x
-     * @param y
-     * @param map
-     * @return
+     * @param x the X coordinate of the square that we want to place the equipment in it
+     * @param y the Y coordinate of the square that we want to place the equipment in it
+     * @param map the map where we want to place the equipment
+     * @return if the square was empty and we can place the equipment
      */
     boolean place(int x, int y, Square[][] map)
     {
@@ -49,7 +48,12 @@ abstract class PlacableWeaponry extends Weaponry
         map[x][y].setPlacableWeaponry(this);
         return true;
     }
-
+    
+	/**
+	 * reduces the health of the equipment that had been attacked
+	 * @param x the X coordinate of the square that had been attacked
+	 * @param y the Y coordinate of the square that had been attacked
+	 */
     void attacked(int x,int y)
     {
         setHealth(getHealth() - 1);

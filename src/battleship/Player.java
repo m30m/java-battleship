@@ -32,6 +32,13 @@ public class Player
         return runner;
     }
 
+    /**
+     * constructor that gets the below arguments and creates a player
+     * @param name the name of the player
+     * @param runner the runner
+     * @param width the width of the player's map
+     * @param height the height of the player's map
+     */
     public Player(String name, Runner runner, int width,int height)
     {
         this.health = 16;
@@ -48,6 +55,11 @@ public class Player
         return map;
     }
 
+    /**
+     * the player attacks with radar
+     * @param x the X coordinate of the square that the player place the radar 
+     * @param y the Y coordinate of the square that the player place the radar
+     */
     public void radarAttack(int x, int y)
     {
         for(int i=Math.max(0, x - 1);i<Math.min(x + 2, map.length);i++)
@@ -56,7 +68,11 @@ public class Player
                     getRunner().radarDetect(this,i,j);
 
     }
-
+    
+    /**
+     * the player attacks his opponent map with an aircraft
+     * @param y the Y coordinate of the row the the player attacks
+     */
     public void aircraftAttack(int y)
     {
         if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
@@ -71,6 +87,11 @@ public class Player
             normalAttack(i,y);
     }
 
+    /**
+     * the player normally attacks on of his opponent square
+     * @param x the X coordinate of the square
+     * @param y the Y coordinate of the square
+     */
     public void normalAttack(int x, int y)
     {
         opponent.getMap()[x][y].attacked(x, y);
@@ -81,11 +102,18 @@ public class Player
         return opponent;
     }
 
+    /**
+     * decrease the health of the player
+     */
     public void decreaseHealth()
     {
         health--;
     }
-
+    
+    /**
+     * check if the player is lost
+     * @return if the player is lost
+     */
     public boolean isLost()
     {
         return health <= 0;

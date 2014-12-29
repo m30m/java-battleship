@@ -32,7 +32,7 @@ public class ConsoleRunner extends Runner
         readPlayerMap(scanner, teamB);
         readActions(scanner);
     }
-
+    
     void readActions(Scanner scanner)
     {
         int teamATime=0,teamBTime=0;

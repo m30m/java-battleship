@@ -8,6 +8,15 @@ public class Battleship extends PlacableWeaponry
     private final int length;
     private boolean isVertical;
 
+    /**
+     * constructor that gets the below arguments and creates a battleship
+     * @param id the id of the battleship
+     * @param owner the owner of the battleship
+     * @param x the X coordinate of the first square of the battleship
+     * @param y the Y coordinate of the first square of the battleship
+     * @param length defines the length of the battleship
+     * @param isVertical if the battleship is vertical
+     */
     public Battleship(int id,Player owner, int x, int y, int length, boolean isVertical)
     {
         super(id, length,owner, x, y);
