@@ -1,7 +1,5 @@
 package battleship;
 
-import battleship.console.ConsoleRunner;
-
 /**
  * Created by amin on 11/29/14.
  */
@@ -57,7 +55,7 @@ public class Player
 
     /**
      * the player attacks with radar
-     * @param x the X coordinate of the square that the player place the radar 
+     * @param x the X coordinate of the square that the player place the radar
      * @param y the Y coordinate of the square that the player place the radar
      */
     public void radarAttack(int x, int y)
@@ -68,7 +66,7 @@ public class Player
                     getRunner().radarDetect(this,i,j);
 
     }
-    
+
     /**
      * the player attacks his opponent map with an aircraft
      * @param y the Y coordinate of the row the the player attacks
@@ -77,14 +75,12 @@ public class Player
     {
         if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
         {
-            ConsoleRunner.airTof = true;
-            normalAttack(0,y);
+            normalAttack(0,y,"Aircraft");
             getRunner().aircraftUnsuccessful(this);
-            ConsoleRunner.airTof = false;
             return;
         }
         for(int i=0;i<map.length;i++)
-            normalAttack(i,y);
+            normalAttack(i,y,"Aircraft");
     }
 
     /**
@@ -92,9 +88,9 @@ public class Player
      * @param x the X coordinate of the square
      * @param y the Y coordinate of the square
      */
-    public void normalAttack(int x, int y)
+    public void normalAttack(int x, int y,String attacker)
     {
-        opponent.getMap()[x][y].attacked(x, y);
+        opponent.getMap()[x][y].attacked(x, y,attacker);
     }
 
     public Player getOpponent()
@@ -109,7 +105,7 @@ public class Player
     {
         health--;
     }
-    
+
     /**
      * check if the player is lost
      * @return if the player is lost

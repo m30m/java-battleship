@@ -13,7 +13,6 @@ public class ConsoleRunner extends Runner
 {
     TreeMap<Integer, ArrayList<String>> tm = new TreeMap<Integer, ArrayList<String>>();
     private int currentTime = 0;
-    public static boolean airTof;
 
     @Override
     protected void run()
@@ -72,7 +71,7 @@ public class ConsoleRunner extends Runner
                     timeToExecute = 1;
                 else//radar and aircraft
                     timeToExecute = 2;
-                int finalTime =0 ;
+                int finalTime;
                 if(str.contains("team a"))
                 {
                     teamATime += timeToExecute;
@@ -92,7 +91,7 @@ public class ConsoleRunner extends Runner
 
     private void executeAction(String action)
     {
-        Player executor = null;
+        Player executor;
         if (action.contains("team a"))
             executor = teamA;
         else
@@ -115,7 +114,7 @@ public class ConsoleRunner extends Runner
             x--;
             y--;
             if (action.contains("attack"))
-                executor.normalAttack(x, y);
+                executor.normalAttack(x, y, "Normal");
             else//radar
                 executor.radarAttack(x, y);
         }
@@ -124,7 +123,7 @@ public class ConsoleRunner extends Runner
 
     void readPlayerMap(Scanner input, Player player)
     {
-        String str = null, equipment = "battleship";
+        String str, equipment = "battleship";
         int[] lengthOfBattleship = {4, 3, 3, 2, 2, 1, 1};
         int numOfBattleship = 0;
         while (true)
@@ -184,9 +183,7 @@ public class ConsoleRunner extends Runner
 
     public void explodeAntiaircraft(Player player, int x, int y)
     {
-        x++;
         y++;
-        if(!airTof)
-            System.out.println("team " + player.getName() + " anti aircraft row " + y + " exploded");
+        System.out.println("team " + player.getName() + " anti aircraft row " + y + " exploded");
     }
 }

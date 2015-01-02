@@ -51,10 +51,11 @@ abstract class PlacableWeaponry extends Weaponry
     
 	/**
 	 * reduces the health of the equipment that had been attacked
-	 * @param x the X coordinate of the square that had been attacked
-	 * @param y the Y coordinate of the square that had been attacked
-	 */
-    void attacked(int x,int y)
+     * @param x the X coordinate of the square that had been attacked
+     * @param y the Y coordinate of the square that had been attacked
+     * @param attacker
+     */
+    void attacked(int x, int y, String attacker)
     {
         setHealth(getHealth() - 1);
     }

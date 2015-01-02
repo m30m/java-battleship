@@ -52,9 +52,9 @@ public class Battleship extends PlacableWeaponry
     }
 
     @Override
-    public void attacked(int x,int y)
+    public void attacked(int x, int y, String attacker)
     {
-        super.attacked(x, y);
+        super.attacked(x, y, attacker);
         getOwner().getRunner().explode(getOwner().getOpponent(), x, y);
         getOwner().decreaseHealth();
     }

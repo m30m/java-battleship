@@ -18,9 +18,10 @@ public class AntiAircraft extends PlacableWeaponry
     }
 
     @Override
-    public void attacked(int x, int y)
+    public void attacked(int x, int y, String attacker)
     {
-        super.attacked(x, y);
-        getOwner().getRunner().explodeAntiaircraft(getOwner(), x, y);
+        super.attacked(x, y, attacker);
+        if (!attacker.equals("Aircraft"))
+            getOwner().getRunner().explodeAntiaircraft(getOwner(), x, y);
     }
 }

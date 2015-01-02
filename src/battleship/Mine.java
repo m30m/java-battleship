@@ -19,10 +19,10 @@ public class Mine extends PlacableWeaponry
     }
 
     @Override
-    public void attacked(int x,int y)
+    public void attacked(int x, int y, String attacker)
     {
-        super.attacked(x, y);
-        getOwner().normalAttack(x, y);
+        super.attacked(x, y, attacker);
+        getOwner().normalAttack(x, y,"Mine");
         getOwner().getRunner().mineTrap(getOwner().getOpponent(), x, y);
     }
 }
