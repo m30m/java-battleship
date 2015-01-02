@@ -32,7 +32,7 @@ abstract public class Runner
     /**
      * the "detected" message
      * @param player the player
-     * @param x the X coordinate of the detected square 
+     * @param x the X coordinate of the detected square
      * @param y the Y coordinate of the detected square
      */
     protected abstract void radarDetect(Player player, int x, int y);
@@ -52,5 +52,5 @@ abstract public class Runner
         Runner runner=new ConsoleRunner();
         runner.run();
     }
-    
+
 }

@@ -31,6 +31,11 @@ public class ConsoleRunner extends TextRunner
         readActions(scanner);
     }
 
+    /**
+     * Reading player map: the player place items on his/her map one at a time
+     * @param input
+     * @param player
+     */
     void readPlayerMap(Scanner input, Player player)
     {
         String str, equipment = "battleship";

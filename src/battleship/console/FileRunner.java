@@ -42,6 +42,13 @@ public class FileRunner extends TextRunner
         readActions(new Scanner(System.in));
     }
 
+    /**
+     * Reads the player map from scanner
+     * @param scanner input
+     * @param player the player whose map we are reading
+     * @param width the width of the map
+     * @param height the height of the map
+     */
     private void readPlayerMap(Scanner scanner, Player player, int width, int height)
     {
         for (int i = 0; i < width; i++)

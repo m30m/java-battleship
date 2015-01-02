@@ -15,6 +15,11 @@ abstract public class TextRunner extends Runner
     TreeMap<Integer, ArrayList<String>> tm = new TreeMap<Integer, ArrayList<String>>();
     private int currentTime = 0;
 
+    /**
+     * Reading actions from scanner and storing them in a TreeMap to make them sorted by their time in order to execute them chronologically correct
+     *
+     * @param scanner the input
+     */
     void readActions(Scanner scanner)
     {
         int teamATime=0,teamBTime=0;
@@ -72,6 +77,11 @@ abstract public class TextRunner extends Runner
         }
     }
 
+    /**
+     * Executes a single action
+     *
+     * @param action the action string which is read from input
+     */
     private void executeAction(String action)
     {
         Player executor;
@@ -103,6 +113,8 @@ abstract public class TextRunner extends Runner
         }
 
     }
+
+    //Reporting events to console:
 
     public void mineTrap(Player player, int x, int y)
     {
