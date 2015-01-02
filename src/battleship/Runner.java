@@ -1,6 +1,7 @@
 package battleship;
 
 import battleship.console.ConsoleRunner;
+import battleship.console.FileRunner;
 
 /**
  * Created by amin on 11/29/14.
