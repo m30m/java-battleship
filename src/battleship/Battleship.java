@@ -32,8 +32,10 @@ public class Battleship extends PlacableWeaponry
         {
             for (int i = y; i < y + length; i++)
             {
+                if (map.length <= x || map[x].length <= i)
+                    throw new BattleshipException("Can't fit in map");
                 if (map[x][i].getPlacableWeaponry() != null)
-                    return false;
+                    throw new BattleshipException("Filled square");
             }
             for (int i = y; i < y + length; i++)
                 map[x][i].setPlacableWeaponry(this);
@@ -42,8 +44,10 @@ public class Battleship extends PlacableWeaponry
         {
             for (int i = x; i < x + length; i++)
             {
+                if (map.length <= i || map[i].length <= y)
+                    throw new BattleshipException("Can't fit in map");
                 if (map[i][y].getPlacableWeaponry() != null)
-                    return false;
+                    throw new BattleshipException("Filled square");
             }
             for (int i = x; i < x + length; i++)
                 map[i][y].setPlacableWeaponry(this);

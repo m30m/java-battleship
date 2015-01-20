@@ -3,18 +3,39 @@ package battleship;
 /**
  * Created by amin on 11/29/14.
  */
-class Square
+public class Square
 {
+    private int x;
+    private int y;
     private boolean destroyed;
     private PlacableWeaponry placableWeaponry;
+    private Player owner;
 
     /**
      * constructor that creates a new empty square
      */
-    Square()
+    Square(int x, int y, Player owner)
     {
+        this.owner = owner;
         destroyed = false;
         placableWeaponry = null;
+        this.x = x;
+        this.y = y;
+    }
+
+    public Player getOwner()
+    {
+        return owner;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
     }
 
     public boolean isDestroyed()
