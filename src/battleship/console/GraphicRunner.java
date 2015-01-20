@@ -11,7 +11,9 @@ public class GraphicRunner extends Runner {
 
     private GamePanel gamePanel;
     protected static final int[] LENGTH_OF_BATTLESHIP = new int[]{4, 3, 3, 2, 2, 1, 1};
-    private int numOfBattleship;
+    private int numOfBattleships = 0;
+    private int numOfMines = 0;
+    private int numOfAntiaircrafts = 0;
 
     GameState state;
 
@@ -58,7 +60,7 @@ public class GraphicRunner extends Runner {
         teamA=new Player("amoo", this, 10, 10);
         teamB=new Player("xashxash", this, 10, 10);
         gamePanel.init(teamA, teamB, this);
-        state = GameState.TeamAInit;
+        state = GameState.TeamAPlaceBattleship;
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -66,51 +68,51 @@ public class GraphicRunner extends Runner {
 
     public void clickedOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
-        switch (state)
+        if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
+            readPlayerMap(teamA, graphicSquare, isRight);
+        else if (state.ordinal() < GameState.TeamAPlaying.ordinal())
+            readPlayerMap(teamB, graphicSquare, isRight);
+        else
         {
-            case TeamAInit:
-            {
-                readPlayerMap(teamA, graphicSquare,isRight);
-                break;
-            }
-            case TeamBInit:
-            {
-                readPlayerMap(teamB, graphicSquare,isRight);
-                break;
-            }
-            case TeamAPlaying:
-            {
-                break;
-            }
-            case TeamBPlaying:
-            {
-                break;
-            }
         }
-        if (numOfBattleship == LENGTH_OF_BATTLESHIP.length)
+        if (numOfBattleships == LENGTH_OF_BATTLESHIP.length || numOfMines == 5 || numOfAntiaircrafts == 2)
         {
-            numOfBattleship = 0;
-            if (state == GameState.TeamAInit)
-                state = GameState.TeamBInit;
-            else
-                state = GameState.TeamAPlaying;
+            numOfBattleships = 0;
+            numOfMines = 0;
+            numOfAntiaircrafts = 0;
+            state = GameState.values()[state.ordinal() + 1];
+            System.out.println("I'm here and state is:");
+            System.out.println(state);
         }
         gamePanel.repaint();
     }
 
     private void readPlayerMap(Player player, GraphicSquare graphicSquare, boolean isRight)
     {
-        if (graphicSquare.getSquare().getOwner() != player)
-            return;
         try
         {
-            new Battleship(0, player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY(),
-                    LENGTH_OF_BATTLESHIP[numOfBattleship], isRight);
+            if (graphicSquare.getSquare().getOwner() != player)
+                throw new BattleshipException("Clicking on the other player's map");
+            if (state == GameState.TeamAPlaceMine || state == GameState.TeamBPlaceMine)
+            {
+                new Mine(0, player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY());
+                numOfMines++;
+            }
+            else if (state == GameState.TeamAPlaceAntiaircraft || state == GameState.TeamBPlaceAntiaircraft)
+            {
+                new AntiAircraft(0, player, graphicSquare.getSquare().getY());
+                numOfAntiaircrafts++;
+            }
+            else
+            {
+                new Battleship(0, player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY(),
+                        LENGTH_OF_BATTLESHIP[numOfBattleships], isRight);
+                numOfBattleships++;
+            }
         }
         catch (BattleshipException e)
         {
             return;
         }
-        numOfBattleship++;
     }
 }

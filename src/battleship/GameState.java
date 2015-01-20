@@ -5,8 +5,12 @@ package battleship;
  */
 public enum GameState
 {
-    TeamAInit,
-    TeamBInit,
+    TeamAPlaceBattleship,
+    TeamAPlaceMine,
+    TeamAPlaceAntiaircraft,
+    TeamBPlaceBattleship,
+    TeamBPlaceMine,
+    TeamBPlaceAntiaircraft,
     TeamAPlaying,
     TeamBPlaying,
 }

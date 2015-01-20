@@ -44,7 +44,7 @@ abstract class PlacableWeaponry extends Weaponry
     boolean place(int x, int y, Square[][] map)
     {
         if (map[x][y].getPlacableWeaponry() != null)
-            return false;
+            throw new BattleshipException("Filled square");
         map[x][y].setPlacableWeaponry(this);
         return true;
     }
