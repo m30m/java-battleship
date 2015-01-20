@@ -5,30 +5,13 @@ package battleship;
  */
 public class Player
 {
+    private int height;
+    private int width;
     private Square[][] map;
-
-    public void setOpponent(Player opponent)
-    {
-        this.opponent = opponent;
-    }
-
     private Player opponent;
-
     private Runner runner;
-
     private int health;
-
-    public String getName()
-    {
-        return name;
-    }
-
     private String name;
-
-    public Runner getRunner()
-    {
-        return runner;
-    }
 
     /**
      * constructor that gets the below arguments and creates a player
@@ -42,10 +25,30 @@ public class Player
         this.health = 16;
         this.name=name;
         this.runner=runner;
+        this.width=width;
+        this.height=height;
         map=new Square[width][height];
         for(int i=0;i<width;i++)
             for(int j=0;j<height;j++)
                 map[i][j]=new Square();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Runner getRunner()
+    {
+        return runner;
     }
 
     public Square[][] getMap()
@@ -96,6 +99,11 @@ public class Player
     public Player getOpponent()
     {
         return opponent;
+    }
+
+    public void setOpponent(Player opponent)
+    {
+        this.opponent = opponent;
     }
 
     /**

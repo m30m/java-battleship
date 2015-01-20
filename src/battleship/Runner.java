@@ -2,6 +2,7 @@ package battleship;
 
 import battleship.console.ConsoleRunner;
 import battleship.console.FileRunner;
+import battleship.console.GraphicRunner;
 
 /**
  * Created by amin on 11/29/14.
@@ -49,7 +50,7 @@ abstract public class Runner
     protected abstract void run();
     public static void main(String[] args)
     {
-        Runner runner=new ConsoleRunner();
+        Runner runner=new GraphicRunner();
         runner.run();
     }
 
