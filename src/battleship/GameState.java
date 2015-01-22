@@ -13,4 +13,5 @@ public enum GameState
     TeamBPlaceAntiaircraft,
     TeamAPlaying,
     TeamBPlaying,
+    GameOver
 }

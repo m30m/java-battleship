@@ -26,7 +26,7 @@ public class GraphicRunner extends Runner {
     {
         x++;
         y++;
-        gamePanel.addStatus("team "+player.getName()+" mine trap "+x+","+y);
+        gamePanel.addStatus("team " + player.getName() + " mine trap " + x + "," + y);
     }
 
     public void radarDetect(Player player, int x, int y)
@@ -69,8 +69,10 @@ public class GraphicRunner extends Runner {
 
         gamePanel = new GamePanel();
         frame.getContentPane().add(gamePanel);
-        teamA=new Player("amoo", this, 10, 10);
-        teamB=new Player("xashxash", this, 10, 10);
+        int width= Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+        int height= Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+        teamA=new Player(JOptionPane.showInputDialog ("Player 1 enter your name please"), this, width, height);
+        teamB=new Player(JOptionPane.showInputDialog ("Player 2 enter your name please"), this, width, height);
         teamA.setOpponent(teamB);
         teamB.setOpponent(teamA);
         gamePanel.init(teamA, teamB, this);
@@ -82,6 +84,8 @@ public class GraphicRunner extends Runner {
 
     public void clickedOnMenuButton(JButton button)
     {
+        if(state==GameState.GameOver)
+            return;
         String s=button.getText();
         int so=state.ordinal();
         if(s.equals("Next"))
@@ -102,6 +106,8 @@ public class GraphicRunner extends Runner {
 
     public void clickedOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
+        if(state==GameState.GameOver)
+            return;
         if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
             readPlayerMap(teamA, graphicSquare, isRight);
         else if (state.ordinal() < GameState.TeamAPlaying.ordinal())
@@ -141,11 +147,23 @@ public class GraphicRunner extends Runner {
             numOfMines = 0;
             numOfAntiaircrafts = 0;
             state = GameState.values()[state.ordinal() + 1];
-            System.out.println("I'm here and state is:");
-            System.out.println(state);
         }
         attackType=null;
         gamePanel.repaint();
+        if (teamA.isLost())
+        {
+            gamePanel.showGameOverMessage("team " + teamB.getName() + " wins");
+            gamePanel.addStatus("team " + teamB.getName() + " wins");
+            state=GameState.GameOver;
+            return;
+        }
+        if (teamB.isLost())
+        {
+            gamePanel.showGameOverMessage("team " + teamA.getName() + " wins");
+            gamePanel.addStatus("team " + teamA.getName() + " wins");
+            state=GameState.GameOver;
+            return;
+        }
     }
 
     private void readPlayerMap(Player player, GraphicSquare graphicSquare, boolean isRight)

@@ -71,7 +71,7 @@ public class GraphicSquare extends JComponent
         if(runner.getState()==GameState.TeamAPlaying || runner.getState()==GameState.TeamBPlaying) {
             if(square.isDestroyed())
                 g2d.setColor(new Color(0, 0, 0));
-            if(square.isDetected())
+            else if(square.isDetected())
             {
                 g2d.setColor(new Color(153, 230, 255));
                 if(square.getPlacableWeaponry() instanceof Battleship)

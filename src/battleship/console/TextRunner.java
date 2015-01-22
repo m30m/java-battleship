@@ -47,7 +47,6 @@ abstract public class TextRunner extends Runner
                             System.out.println("team a wins");
                             return;
                         }
-
                     }
                     tm.remove(tm.firstKey());
                 }
