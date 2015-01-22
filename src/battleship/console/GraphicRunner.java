@@ -70,7 +70,7 @@ public class GraphicRunner extends Runner {
         gamePanel = new GamePanel();
         frame.getContentPane().add(gamePanel);
         int width= Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
-        int height= Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+        int height= Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
         teamA=new Player(JOptionPane.showInputDialog ("Player 1 enter your name please"), this, width, height);
         teamB=new Player(JOptionPane.showInputDialog ("Player 2 enter your name please"), this, width, height);
         teamA.setOpponent(teamB);
