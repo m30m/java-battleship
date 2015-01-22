@@ -22,29 +22,36 @@ public class GraphicRunner extends Runner {
 
     private GameState state;
 
-    @Override
-    protected void mineTrap(Player player, int x, int y) {
-
+    public void mineTrap(Player player, int x, int y)
+    {
+        x++;
+        y++;
+        gamePanel.addStatus("team "+player.getName()+" mine trap "+x+","+y);
     }
 
-    @Override
-    protected void explode(Player player, int x, int y) {
-
+    public void radarDetect(Player player, int x, int y)
+    {
+        x++;
+        y++;
+        gamePanel.addStatus("team " + player.getName() + " detected " + x + "," + y);
     }
 
-    @Override
-    protected void aircraftUnsuccessful(Player player) {
-
+    public void explode(Player player,int x, int y)
+    {
+        x++;
+        y++;
+        gamePanel.addStatus("team "+player.getName()+" explode "+x+","+y);
     }
 
-    @Override
-    protected void radarDetect(Player player, int x, int y) {
-
+    public void aircraftUnsuccessful(Player player)
+    {
+        gamePanel.addStatus("aircraft unsuccessful");
     }
 
-    @Override
-    protected void explodeAntiaircraft(Player player, int x, int y) {
-
+    public void explodeAntiaircraft(Player player, int x, int y)
+    {
+        y++;
+        gamePanel.addStatus("team " + player.getName() + " anti aircraft row " + y + " exploded");
     }
 
     @Override
@@ -76,10 +83,10 @@ public class GraphicRunner extends Runner {
     public void clickedOnMenuButton(JButton button)
     {
         String s=button.getText();
-        int o=state.ordinal();
+        int so=state.ordinal();
         if(s.equals("Next"))
         {
-            if(o==1 || o==2 || o==4 || o==5)
+            if(so==1 || so==2 || so==4 || so==5)
                 state = GameState.values()[state.ordinal() + 1];
         }
         else if(s.equals("NormalAttack"))
@@ -88,7 +95,7 @@ public class GraphicRunner extends Runner {
             attackType=AttackType.AirCraft;
         else
             attackType=AttackType.Radar;
-        if(o<6)
+        if(so<6)
             attackType=null;
         gamePanel.repaint();
     }
@@ -124,7 +131,7 @@ public class GraphicRunner extends Runner {
             }
             catch (BattleshipException e)
             {
-                System.out.println(e.getMessage());
+                gamePanel.addStatus(e.getMessage());
                 return;
             }
         }
@@ -166,7 +173,7 @@ public class GraphicRunner extends Runner {
         }
         catch (BattleshipException e)
         {
-            System.out.println(e.getMessage());
+            gamePanel.addStatus(e.getMessage());
             return;
         }
     }
