@@ -14,7 +14,7 @@ public class GraphicRunner extends Runner {
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
-    private AttackType attackType=AttackType.Normal;
+    private AttackType attackType=null;
 
     public GameState getState() {
         return state;
@@ -73,6 +73,26 @@ public class GraphicRunner extends Runner {
         frame.setVisible(true);
     }
 
+    public void clickedOnMenuButton(JButton button)
+    {
+        String s=button.getText();
+        int o=state.ordinal();
+        if(s.equals("Next"))
+        {
+            if(o==1 || o==2 || o==4 || o==5)
+                state = GameState.values()[state.ordinal() + 1];
+        }
+        else if(s.equals("NormalAttack"))
+            attackType=AttackType.Normal;
+        else if(s.equals("AirCraftAttack"))
+            attackType=AttackType.AirCraft;
+        else
+            attackType=AttackType.Radar;
+        if(o<6)
+            attackType=null;
+        gamePanel.repaint();
+    }
+
     public void clickedOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
         if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
@@ -101,7 +121,6 @@ public class GraphicRunner extends Runner {
                     state = GameState.TeamAPlaying;
                 else
                     state = GameState.TeamBPlaying;
-                //  attackType=null;
             }
             catch (BattleshipException e)
             {
@@ -118,6 +137,7 @@ public class GraphicRunner extends Runner {
             System.out.println("I'm here and state is:");
             System.out.println(state);
         }
+        attackType=null;
         gamePanel.repaint();
     }
 
