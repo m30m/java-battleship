@@ -8,6 +8,16 @@ public class Square
     private int x;
     private int y;
     private boolean destroyed;
+
+    public boolean isDetected() {
+        return detected;
+    }
+
+    public void setDetected(boolean detected) {
+        this.detected = detected;
+    }
+
+    private boolean detected;
     private PlacableWeaponry placableWeaponry;
     private Player owner;
 

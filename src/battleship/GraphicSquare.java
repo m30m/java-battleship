@@ -27,6 +27,7 @@ public class GraphicSquare extends JComponent
             @Override
             public void mouseClicked(MouseEvent mouseEvent)
             {
+                System.out.println(mouseEvent.getButton());
                 runner.clickedOnSquare(GraphicSquare.this, mouseEvent.getButton() == 3);
             }
 
@@ -66,15 +67,28 @@ public class GraphicSquare extends JComponent
     {
         super.paintComponents(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(new Color(255, 0, 0));
-        if (square.getPlacableWeaponry() == null)
-            g2d.setColor(new Color(153, 230, 255));
-        else if (square.getPlacableWeaponry() instanceof AntiAircraft)
-            g2d.setColor(new Color(222, 255, 76));
-        else if (square.getPlacableWeaponry() instanceof Battleship)
-            g2d.setColor(new Color(23, 255, 139));
-        else if (square.getPlacableWeaponry() instanceof Mine)
-            g2d.setColor(new Color(170, 54, 255));
+        g2d.setColor(new Color(255, 230, 225));
+        if(runner.getState()==GameState.TeamAPlaying || runner.getState()==GameState.TeamBPlaying) {
+            if(square.isDestroyed())
+                g2d.setColor(new Color(0, 0, 0));
+            if(square.isDetected())
+            {
+                g2d.setColor(new Color(153, 230, 255));
+                if(square.getPlacableWeaponry() instanceof Battleship)
+                    g2d.setColor(new Color(23, 255, 139));
+            }
+
+        }
+        else {
+            if (square.getPlacableWeaponry() == null)
+                g2d.setColor(new Color(153, 230, 255));
+            else if (square.getPlacableWeaponry() instanceof AntiAircraft)
+                g2d.setColor(new Color(222, 255, 76));
+            else if (square.getPlacableWeaponry() instanceof Battleship)
+                g2d.setColor(new Color(23, 255, 139));
+            else if (square.getPlacableWeaponry() instanceof Mine)
+                g2d.setColor(new Color(170, 54, 255));
+        }
         g2d.fillRect(0, 0, SIZE, SIZE);
     }
 }

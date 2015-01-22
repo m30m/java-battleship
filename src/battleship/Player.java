@@ -12,6 +12,8 @@ public class Player
     private Runner runner;
     private int health;
     private String name;
+    private int numOfAirCrafts;
+    private int numOfRadars;
 
     /**
      * constructor that gets the below arguments and creates a player
@@ -63,10 +65,14 @@ public class Player
      */
     public void radarAttack(int x, int y)
     {
+        if(numOfRadars==4)
+            throw new BattleshipException("Can't use radar anymore");
         for(int i=Math.max(0, x - 1);i<Math.min(x + 2, map.length);i++)
-            for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++)
-                if(getOpponent().getMap()[i][j].getPlacableWeaponry() instanceof Battleship)
-                    getRunner().radarDetect(this,i,j);
+            for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++) {
+                getOpponent().getMap()[i][j].setDetected(true);
+                if (getOpponent().getMap()[i][j].getPlacableWeaponry() instanceof Battleship)
+                    getRunner().radarDetect(this, i, j);
+            }
 
     }
 
@@ -76,6 +82,8 @@ public class Player
      */
     public void aircraftAttack(int y)
     {
+        if(numOfAirCrafts==2)
+            throw new BattleshipException("Can't use aircraft anymore");
         if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
         {
             normalAttack(0,y,"Aircraft");
@@ -93,6 +101,7 @@ public class Player
      */
     public void normalAttack(int x, int y,String attacker)
     {
+        System.out.println("FF");
         opponent.getMap()[x][y].attacked(x, y,attacker);
     }
 

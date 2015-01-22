@@ -14,8 +14,13 @@ public class GraphicRunner extends Runner {
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
+    private AttackType attackType=AttackType.Normal;
 
-    GameState state;
+    public GameState getState() {
+        return state;
+    }
+
+    private GameState state;
 
     @Override
     protected void mineTrap(Player player, int x, int y) {
@@ -59,6 +64,8 @@ public class GraphicRunner extends Runner {
         frame.getContentPane().add(gamePanel);
         teamA=new Player("amoo", this, 10, 10);
         teamB=new Player("xashxash", this, 10, 10);
+        teamA.setOpponent(teamB);
+        teamB.setOpponent(teamA);
         gamePanel.init(teamA, teamB, this);
         state = GameState.TeamAPlaceBattleship;
         frame.pack();
@@ -74,6 +81,33 @@ public class GraphicRunner extends Runner {
             readPlayerMap(teamB, graphicSquare, isRight);
         else
         {
+            Player attacker=teamA;
+            if(state==GameState.TeamBPlaying)
+                attacker=teamB;
+            try {
+                if (graphicSquare.getSquare().getOwner() == attacker)
+                    throw new BattleshipException("Clicking on the other player's map");
+                int x = graphicSquare.getSquare().getX();
+                int y = graphicSquare.getSquare().getY();
+                if (attackType == AttackType.Normal)
+                    attacker.normalAttack(x, y, "Normal");
+                else if (attackType == AttackType.AirCraft)
+                    attacker.aircraftAttack(y);
+                else if (attackType == AttackType.Radar)
+                    attacker.radarAttack(x, y);
+                else
+                    throw new BattleshipException("Null attack");
+                if (state == GameState.TeamBPlaying)
+                    state = GameState.TeamAPlaying;
+                else
+                    state = GameState.TeamBPlaying;
+                //  attackType=null;
+            }
+            catch (BattleshipException e)
+            {
+                System.out.println(e.getMessage());
+                return;
+            }
         }
         if (numOfBattleships == LENGTH_OF_BATTLESHIP.length || numOfMines == 5 || numOfAntiaircrafts == 2)
         {
@@ -112,6 +146,7 @@ public class GraphicRunner extends Runner {
         }
         catch (BattleshipException e)
         {
+            System.out.println(e.getMessage());
             return;
         }
     }
