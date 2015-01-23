@@ -17,21 +17,26 @@ import java.io.IOException;
 public class GraphicSquare extends JComponent
 {
     public static final int SIZE = 50;
+    private static int SQUARE_STATE = 0;
     Square square;
     GraphicRunner runner;
 
-    private static BufferedImage mine0, mine1, antiaircraft;
+    private static BufferedImage[] mine = new BufferedImage[2];
+    private static BufferedImage antiaircraft[] = new BufferedImage[2];
 
     static {
         try {
-            mine0 = ImageIO.read(new File("src/images/mine0.png"));
-            mine1 = ImageIO.read(new File("src/images/mine1.png"));
-            antiaircraft = ImageIO.read(new File("src/images/antiaircraft.png"));
+            mine[0] = ImageIO.read(new File("src/images/mine0.png"));
+            mine[1] = ImageIO.read(new File("src/images/mine1.png"));
+            antiaircraft[0] = ImageIO.read(new File("src/images/antiaircraft0.png"));
+            antiaircraft[1] = ImageIO.read(new File("src/images/antiaircraft1.png"));
         } catch (IOException e) {
-
         }
     }
 
+    public static void changeState(){
+        SQUARE_STATE=1-SQUARE_STATE;
+    }
 
     public GraphicSquare(Square square, final GraphicRunner runner)
     {
@@ -44,7 +49,6 @@ public class GraphicSquare extends JComponent
             @Override
             public void mouseClicked(MouseEvent mouseEvent)
             {
-                System.out.println(mouseEvent.getButton());
                 runner.clickedOnSquare(GraphicSquare.this, mouseEvent.getButton() == 3);
             }
 
@@ -83,6 +87,7 @@ public class GraphicSquare extends JComponent
     protected void paintComponent(Graphics g) {
         super.paintComponents(g);
         Graphics2D g2d = (Graphics2D) g;
+        Color c = g2d.getColor();
         g2d.setColor(new Color(255, 230, 225));
         if (runner.getState() == GameState.TeamAPlaying || runner.getState() == GameState.TeamBPlaying) {
             if (square.isDestroyed())
@@ -97,18 +102,16 @@ public class GraphicSquare extends JComponent
             if (square.getPlacableWeaponry() == null)
                 g2d.setColor(new Color(153, 230, 255));
             else if (square.getPlacableWeaponry() instanceof AntiAircraft){
-                Color c = g2d.getColor();
-                g2d.drawImage(antiaircraft, 0, 0, null);
+                g2d.drawImage(antiaircraft[SQUARE_STATE], 0, 0, null);
                 g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
             }
             else if (square.getPlacableWeaponry() instanceof Battleship)
                 g2d.setColor(new Color(23, 255, 139));
             else if (square.getPlacableWeaponry() instanceof Mine) {
-                Color c = g2d.getColor();
-                g2d.drawImage(mine1, 0, 0, null);
+                g2d.drawImage(mine[SQUARE_STATE], 0, 0, null);
                 g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
             }
-            g2d.fillRect(0, 0, SIZE, SIZE);
         }
+        g2d.fillRect(0, 0, SIZE, SIZE);
     }
 }

@@ -2,10 +2,14 @@ package battleship;
 
 import battleship.console.GraphicRunner;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by The_CodeBreakeR on 1/20/15.
@@ -22,6 +26,17 @@ public class GamePanel extends JPanel {
             new JButton("AirCraftAttack"),
             new JButton("RadarAttack"),
     };
+
+    private static BufferedImage buttonImages[]=new BufferedImage[4];
+
+    static {
+        try {
+            buttonImages[1] = ImageIO.read(new File("src/images/normal.png"));
+            buttonImages[2] = ImageIO.read(new File("src/images/aircraft.png"));
+            buttonImages[3] = ImageIO.read(new File("src/images/radar.png"));
+        } catch (IOException e) {
+        }
+    }
 
     public void init(Player p1, Player p2, final GraphicRunner runner)
     {
@@ -45,6 +60,10 @@ public class GamePanel extends JPanel {
             });
             button.setSize(new Dimension(150,height/9));
             button.setLocation(25,(i)*(height/8));
+            if(p1.getHeight()>6 && buttonImages[i]!=null) {
+                Image air = buttonImages[i].getScaledInstance(button.getWidth(), button.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                button.setIcon(new ImageIcon(air));
+            }
             menuPanel.add(button);
         }
         status.setSize(new Dimension(150, 4 * (height/8) ));

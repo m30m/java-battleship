@@ -59,6 +59,20 @@ public class GraphicRunner extends Runner {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGui();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (!state.equals(GameState.GameOver)) {
+                            GraphicSquare.changeState();
+                            gamePanel.repaint();
+                            try {
+                                Thread.sleep(200);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
             }
         });
     }
