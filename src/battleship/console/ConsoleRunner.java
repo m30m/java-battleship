@@ -1,11 +1,8 @@
 package battleship.console;
 
 import battleship.*;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.TreeMap;
 
 /**
  * Created by amin on 11/29/14. this is changed
@@ -59,14 +56,14 @@ public class ConsoleRunner extends TextRunner
                 int y = scanner.nextInt();
                 x--;
                 y--;
-                new Battleship(0, player, x, y,
+                new Battleship(player, x, y,
                         lengthOfBattleship[numOfBattleship], scanner.next().equals("V"));
                 numOfBattleship++;
             }
             else if (equipment.equals("anti aircraft"))
-                new AntiAircraft(0, player, scanner.nextInt() - 1);
+                new AntiAircraft(player, scanner.nextInt() - 1);
             else
-                new Mine(0, player, scanner.nextInt() - 1, scanner.nextInt() - 1);
+                new Mine(player, scanner.nextInt() - 1, scanner.nextInt() - 1);
         }
     }
 

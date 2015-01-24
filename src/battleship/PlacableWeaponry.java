@@ -10,15 +10,14 @@ abstract class PlacableWeaponry extends Weaponry
 
     /**
      * constructor that gets the below arguments and creates a placable weaponry
-     * @param id the id of the placable weaponry
      * @param health the health of the placable weaponry
      * @param owner the owner of the placable weaponry
      * @param x the X coordinate of the placable weaponry
      * @param y the Y coordinate of the placable weaponry
      */
-    public PlacableWeaponry(int id, int health,Player owner, int x, int y)
+    public PlacableWeaponry(int health, Player owner, int x, int y)
     {
-        super(id, health,owner);
+        super(health, owner);
         this.x = x;
         this.y = y;
     }

@@ -59,11 +59,11 @@ public class FileRunner extends TextRunner
                 char c = line.charAt(j);
 
                 if (c == 'A')//AntiAircraft
-                    new AntiAircraft(0, player, j);
+                    new AntiAircraft(player, j);
                 else if (c == 'B')//Battleship
-                    new Battleship(0, player, i, j, 1, true);
+                    new Battleship(player, i, j, 1, true);
                 else if (c == 'M')//Mine
-                    new Mine(0, player, i, j);
+                    new Mine(player, i, j);
             }
         }
     }

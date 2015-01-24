@@ -22,7 +22,8 @@ public class GraphicSquare extends JComponent
     GraphicRunner runner;
 
     private static BufferedImage[] mine = new BufferedImage[2];
-    private static BufferedImage antiaircraft[] = new BufferedImage[2];
+    private static BufferedImage[] antiaircraft = new BufferedImage[2];
+    private static BufferedImage[] battleship = new BufferedImage[8];
 
     static {
         try {
@@ -30,6 +31,8 @@ public class GraphicSquare extends JComponent
             mine[1] = ImageIO.read(new File("src/images/mine1.png"));
             antiaircraft[0] = ImageIO.read(new File("src/images/antiaircraft0.png"));
             antiaircraft[1] = ImageIO.read(new File("src/images/antiaircraft1.png"));
+            for (int i = 0; i < 8; i++)
+                battleship[i] = ImageIO.read(new File("src/images/battleship" + i + ".png"));
         } catch (IOException e) {
         }
     }
@@ -94,8 +97,10 @@ public class GraphicSquare extends JComponent
                 g2d.setColor(new Color(0, 0, 0));
             else if (square.isDetected()) {
                 g2d.setColor(new Color(153, 230, 255));
-                if (square.getPlacableWeaponry() instanceof Battleship)
-                    g2d.setColor(new Color(23, 255, 139));
+                if (square.getPlacableWeaponry() instanceof Battleship) {
+                    g2d.drawImage(battleship[selectBattleshipImage()], 0, 0, null);
+                    g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
+                }
             }
 
         } else {
@@ -105,13 +110,41 @@ public class GraphicSquare extends JComponent
                 g2d.drawImage(antiaircraft[SQUARE_STATE], 0, 0, null);
                 g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
             }
-            else if (square.getPlacableWeaponry() instanceof Battleship)
-                g2d.setColor(new Color(23, 255, 139));
+            else if (square.getPlacableWeaponry() instanceof Battleship){
+                g2d.drawImage(battleship[selectBattleshipImage()], 0, 0, null);
+                g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
+            }
             else if (square.getPlacableWeaponry() instanceof Mine) {
                 g2d.drawImage(mine[SQUARE_STATE], 0, 0, null);
                 g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
             }
         }
         g2d.fillRect(0, 0, SIZE, SIZE);
+    }
+
+    private int selectBattleshipImage() {
+        Battleship battleship=(Battleship) square.getPlacableWeaponry();
+        if(battleship.isVertical())
+        {
+            if(battleship.getLength()==1)
+                return 0;
+            else if(battleship.getY()==square.getY())
+                return 3;
+            else if(battleship.getY()+battleship.getLength()-1==square.getY())
+                return 4;
+            else
+                return 1;
+        }
+        else
+        {
+            if(battleship.getLength()==1)
+                return 7;
+            else if(battleship.getX()==square.getX())
+                return 5;
+            else if(battleship.getX()+battleship.getLength()-1==square.getX())
+                return 6;
+            else
+                return 2;
+        }
     }
 }

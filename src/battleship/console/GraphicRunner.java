@@ -188,17 +188,17 @@ public class GraphicRunner extends Runner {
                 throw new BattleshipException("Clicking on the other player's map");
             if (state == GameState.TeamAPlaceMine || state == GameState.TeamBPlaceMine)
             {
-                new Mine(0, player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY());
+                new Mine(player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY());
                 numOfMines++;
             }
             else if (state == GameState.TeamAPlaceAntiaircraft || state == GameState.TeamBPlaceAntiaircraft)
             {
-                new AntiAircraft(0, player, graphicSquare.getSquare().getY());
+                new AntiAircraft(player, graphicSquare.getSquare().getY());
                 numOfAntiaircrafts++;
             }
             else
             {
-                new Battleship(0, player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY(),
+                new Battleship(player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY(),
                         LENGTH_OF_BATTLESHIP[numOfBattleships], isRight);
                 numOfBattleships++;
             }

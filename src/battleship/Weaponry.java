@@ -5,19 +5,16 @@ package battleship;
  */
 abstract class Weaponry
 {
-    private int id;
     private int health;
     private Player owner;
 
     /**
      * constructor that gets the below arguments and creates a weaponry
-     * @param id the id of the weaponry
      * @param health the health of the weaponry
      * @param owner the owner of the weaponry
      */
-    public Weaponry(int id, int health, Player owner)
+    public Weaponry(int health, Player owner)
     {
-        this.id = id;
         this.health = health;
         this.owner = owner;
     }
@@ -25,11 +22,6 @@ abstract class Weaponry
     public Player getOwner()
     {
         return owner;
-    }
-
-    public int getId()
-    {
-        return id;
     }
 
     public int getHealth()
