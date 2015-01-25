@@ -3,18 +3,25 @@ package battleship.console;
 import battleship.*;
 
 import javax.swing.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.*;
+import java.util.Enumeration;
 
 /**
  * Created by The_CodeBreakeR on 1/20/15.
  */
 public class GraphicRunner extends Runner {
 
+    public static final int PORT = 8585;
     private GamePanel gamePanel;
     protected static final int[] LENGTH_OF_BATTLESHIP = new int[]{4, 3, 3, 2, 2, 1, 1};
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
     private AttackType attackType=null;
+    private ObjectInputStream inputStream = null;
+    private ObjectOutputStream outputStream = null;
 
     public GameState getState() {
         return state;
@@ -83,17 +90,149 @@ public class GraphicRunner extends Runner {
 
         gamePanel = new GamePanel();
         frame.getContentPane().add(gamePanel);
-        int width= Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
-        int height= Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
-        teamA=new Player(JOptionPane.showInputDialog ("Player 1 enter your name please"), this, width, height);
-        teamB=new Player(JOptionPane.showInputDialog ("Player 2 enter your name please"), this, width, height);
-        teamA.setOpponent(teamB);
-        teamB.setOpponent(teamA);
-        gamePanel.init(teamA, teamB, this);
-        state = GameState.TeamAPlaceBattleship;
+        //Single/Multi Player
+        Object[] gameModes = {"On single computer", "On network"};
+        int gameMode = JOptionPane.showOptionDialog(frame, "Please select the game mode", "Battleship",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameModes, gameModes[0]);
+        if (gameMode == 0)
+        {
+            final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+            final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
+            teamA = new Player(JOptionPane.showInputDialog("Player 1 enter your name please"), this, width, height);
+            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
+            teamA.setOpponent(teamB);
+            teamB.setOpponent(teamA);
+            gamePanel.init(teamA, teamB, this);
+            state = GameState.TeamAPlaceBattleship;
+        }
+        else//Multiplayer
+        {
+            final String name = JOptionPane.showInputDialog("Please enter your name");
+            Object[] options = {"Host a server", "Connect to another server"};
+            int connection = JOptionPane.showOptionDialog(frame, "How do you want to start the game?", "Battleship",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            try
+            {
+                if (connection == 0)//Server
+                {
+                    final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+                    final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
+                    teamA = new Player(name, this, width, height);
+                    final ServerSocket serverSocket = new ServerSocket(PORT, 2);
+//                    JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :"+getIP(), JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{"Cancel"}, null); TODO:make cancel work
+                    final JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :" + getIP(), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+                    final JDialog dialog = pane.createDialog(null, "Waiting for connection");
+                    Thread thread = new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Socket socket = serverSocket.accept();
+                                outputStream = new ObjectOutputStream(socket.getOutputStream());
+                                inputStream = new ObjectInputStream(socket.getInputStream());
+                                outputStream.writeObject(name);
+                                outputStream.writeObject(width);
+                                outputStream.writeObject(height);
+                                String otherName = (String) inputStream.readObject();
+                                teamB = new Player(otherName, GraphicRunner.this, width, height);
+                                pane.setMessage(otherName + " connected.");
+                                Thread.sleep(3000);
+                                dialog.dispose();
+
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    thread.start();
+                    dialog.setVisible(true);
+                }
+                else//Client
+                {
+
+                    final String host = JOptionPane.showInputDialog("Enter host address:", "127.0.0.1");
+                    final JOptionPane pane = new JOptionPane("Connecting to " + host, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+                    final JDialog dialog = pane.createDialog(null, "Connecting...");
+                    final Thread thread = new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            while (inputStream == null)
+                            {
+                                try
+                                {
+                                    Socket socket = new Socket(host, PORT);
+                                    outputStream = new ObjectOutputStream(socket.getOutputStream());
+                                    inputStream = new ObjectInputStream(socket.getInputStream());
+                                    outputStream.writeObject(name);
+                                    String otherName = (String) inputStream.readObject();
+                                    int width = (Integer) inputStream.readObject();
+                                    int height = (Integer) inputStream.readObject();
+                                    System.out.println("Width : " + width + " Height: " + height);
+                                    teamB = new Player(name, GraphicRunner.this, width, height);
+                                    teamA = new Player(otherName, GraphicRunner.this, width, height);
+                                    pane.setMessage("Connected to " + otherName);
+                                    Thread.sleep(3000);
+                                    dialog.dispose();
+
+                                } catch (Exception e)
+                                {
+                                    try
+                                    {
+                                        Thread.sleep(1000);//Trying to establish a connection every 1 second
+                                    } catch (InterruptedException e1)
+                                    {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    thread.start();
+                    dialog.setVisible(true);
+
+                }
+            } catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(frame, "An error occurred, please try again");
+                return;
+            }
+            teamA.setOpponent(teamB);
+            teamB.setOpponent(teamA);
+            gamePanel.init(teamA, teamB, this);
+            state = GameState.TeamAPlaceBattleship;
+        }
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private String getIP()//Copy pasted from stackoverflow
+    {
+        String ip = "127.0.0.1";
+        try
+        {
+            Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+            for (; n.hasMoreElements(); )
+            {
+                NetworkInterface e = n.nextElement();
+                Enumeration<InetAddress> a = e.getInetAddresses();
+                for (; a.hasMoreElements(); )
+                {
+                    InetAddress addr = a.nextElement();
+                    if (addr.getHostAddress().startsWith("192."))
+                        ip = addr.getHostAddress();
+                }
+            }
+        } catch (SocketException e)
+        {
+            return ip;
+        }
+        return ip;
     }
 
     public void clickedOnMenuButton(JButton button)
