@@ -92,18 +92,38 @@ public class GraphicSquare extends JComponent
         Graphics2D g2d = (Graphics2D) g;
         Color c = g2d.getColor();
         g2d.setColor(new Color(255, 230, 225));
-        if (runner.getState() == GameState.TeamAPlaying || runner.getState() == GameState.TeamBPlaying) {
+        boolean isMine = false;
+        if (runner.isNetwork())
+            isMine = (getSquare().getOwner() ==runner.getMyPlayer());
+        if (runner.getState() == GameState.TeamAPlaying || runner.getState() == GameState.TeamBPlaying)
+        {
             if (square.isDestroyed())
                 g2d.setColor(new Color(0, 0, 0));
-            else if (square.isDetected()) {
+            else if (square.isDetected() || isMine)
+            {
                 g2d.setColor(new Color(153, 230, 255));
                 if (square.getPlacableWeaponry() instanceof Battleship) {
                     g2d.drawImage(battleship[selectBattleshipImage()], 0, 0, null);
                     g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
                 }
+                else if (isMine)
+                {
+                    if (square.getPlacableWeaponry() instanceof Mine)
+                    {
+                        g2d.drawImage(mine[SQUARE_STATE], 0, 0, null);
+                        g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
+                    }
+                    else if (square.getPlacableWeaponry() instanceof AntiAircraft)
+                    {
+                        g2d.drawImage(antiaircraft[SQUARE_STATE], 0, 0, null);
+                        g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
+                    }
+                }
             }
 
         } else {
+            if (!isMine)
+                return;
             if (square.getPlacableWeaponry() == null)
                 g2d.setColor(new Color(153, 230, 255));
             else if (square.getPlacableWeaponry() instanceof AntiAircraft){

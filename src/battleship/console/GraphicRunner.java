@@ -2,14 +2,15 @@ package battleship.console;
 
 import battleship.*;
 import battleship.network.ActionContainer;
+import battleship.network.CommandContainer;
 import battleship.network.MessegeContainer;
+import battleship.network.NetworkHandler;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.*;
-import java.util.Enumeration;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Created by The_CodeBreakeR on 1/20/15.
@@ -18,20 +19,25 @@ public class GraphicRunner extends Runner
 {
 
     public static final int PORT = 8585;
-    private GamePanel gamePanel;
     protected static final int[] LENGTH_OF_BATTLESHIP = new int[]{4, 3, 3, 2, 2, 1, 1};
+    NetworkHandler networkHandler = null;
+    private GamePanel gamePanel;
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
     private AttackType attackType = null;
     private boolean isPaused;
+    private GameState state;
+
+    public void setAttackType(AttackType attackType)
+    {
+        this.attackType = attackType;
+    }
 
     public GameState getState()
     {
         return state;
     }
-
-    private GameState state;
 
     public void mineTrap(Player player, int x, int y)
     {
@@ -124,80 +130,10 @@ public class GraphicRunner extends Runner
         return isPaused;
     }
 
-    class NetworkHandler implements Runnable
+    public NetworkHandler getNetworkHandler()
     {
-        private ObjectInputStream inputStream = null;
-        private ObjectOutputStream outputStream = null;
-        boolean isTeamA;
-
-        @Override
-        public void run()
-        {
-            while (true)
-            {
-                try
-                {
-
-                    Object object = inputStream.readObject();
-                    if (object instanceof ActionContainer)
-                    {
-                        ActionContainer actionContainer = (ActionContainer) object;
-                        Player player = actionContainer.isTeamA() ? teamA : teamB;
-                        Square square = player.getMap()[actionContainer.getX()][actionContainer.getY()];
-                        clickedOnSquare(square, actionContainer.isRightClick());
-                    }
-                    else if (object instanceof MessegeContainer)
-                    {
-                        sendMessage(isTeamA ? teamB : teamA, ((MessegeContainer) object).getMessege());
-                    }
-                } catch (IOException e)
-                {
-                    break;
-                } catch (ClassNotFoundException e)
-                {
-                    break;
-                }
-            }
-        }
-
-        public void sendObject(Object object)
-        {
-            try
-            {
-                outputStream.writeObject(object);
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        private String getIP()//Copy pasted from stackoverflow
-        {
-            String ip = "127.0.0.1";
-            try
-            {
-                Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-                for (; n.hasMoreElements(); )
-                {
-                    NetworkInterface e = n.nextElement();
-                    Enumeration<InetAddress> a = e.getInetAddresses();
-                    for (; a.hasMoreElements(); )
-                    {
-                        InetAddress addr = a.nextElement();
-                        System.out.println(addr.getHostAddress());
-                        if (!addr.getHostAddress().startsWith("127.") && !addr.getHostAddress().startsWith("0:"))
-                            ip = addr.getHostAddress();
-                    }
-                }
-            } catch (SocketException e)
-            {
-                return ip;
-            }
-            return ip;
-        }
+        return networkHandler;
     }
-
-    NetworkHandler networkHandler = null;
 
     private void createAndShowGui()
     {
@@ -226,7 +162,7 @@ public class GraphicRunner extends Runner
         }
         else//On network
         {
-            networkHandler = new NetworkHandler();
+            networkHandler = new NetworkHandler(this);
             final String name = JOptionPane.showInputDialog("Please enter your name");
             Object[] options = {"Host a server", "Connect to another server"};
             int connection = JOptionPane.showOptionDialog(frame, "How do you want to start the game?", "Battleship",
@@ -293,7 +229,6 @@ public class GraphicRunner extends Runner
                                     String otherName = (String) networkHandler.inputStream.readObject();
                                     int width = (Integer) networkHandler.inputStream.readObject();
                                     int height = (Integer) networkHandler.inputStream.readObject();
-                                    System.out.println("Width : " + width + " Height: " + height);
                                     teamB = new Player(name, GraphicRunner.this, width, height);
                                     teamA = new Player(otherName, GraphicRunner.this, width, height);
                                     pane.setMessage("Connected to " + otherName);
@@ -334,11 +269,21 @@ public class GraphicRunner extends Runner
         frame.setVisible(true);
     }
 
-    public void clickedOnButton(JButton button)
+    public void sendClickOnButton(String s)
+    {
+        if (s.equals("Next"))
+        {
+            CommandContainer command = new CommandContainer();
+            command.setMessege("next");
+            networkHandler.sendObject(command);
+        }
+        clickedOnButton(s);
+    }
+
+    public void clickedOnButton(String s)
     {
         if (state == GameState.GameOver)
             return;
-        String s = button.getText();
         if (s.equals("Pause"))
         {
             isPaused = !isPaused;
@@ -366,6 +311,8 @@ public class GraphicRunner extends Runner
     public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
         Square square = graphicSquare.getSquare();
+        if(isNetwork() && state.ordinal() < GameState.TeamAPlaying.ordinal() && square.getOwner() != getMyPlayer())
+            return;
         if (isNetwork())
         {
             ActionContainer actionContainer = new ActionContainer();
@@ -478,4 +425,18 @@ public class GraphicRunner extends Runner
         }
     }
 
+    public Player getTeamB()
+    {
+        return teamB;
+    }
+
+    public Player getTeamA()
+    {
+        return teamA;
+    }
+
+    public Player getMyPlayer()
+    {
+        return networkHandler.isTeamA() ? teamA : teamB;
+    }
 }

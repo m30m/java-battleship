@@ -61,7 +61,7 @@ public class GamePanel extends JPanel {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    runner.clickedOnButton(button);
+                    runner.sendClickOnButton(button.getText());
                 }
             });
             button.setSize(new Dimension(150,height/9));
@@ -114,7 +114,7 @@ public class GamePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
-                runner.clickedOnButton(pauseButton);
+                runner.sendClickOnButton(pauseButton.getText());
             }
         });
         statusPanel.add(chatArea);
