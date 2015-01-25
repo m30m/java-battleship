@@ -10,7 +10,11 @@ import java.awt.*;
  */
 public class BattleshipPanel extends JComponent
 {
-    Player player;
+    public Player getPlayer() {
+        return player;
+    }
+
+    private Player player;
     private GraphicSquare[][] map;
     private GraphicRunner runner;
 

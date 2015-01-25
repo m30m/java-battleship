@@ -30,6 +30,8 @@ public class GamePanel extends JPanel {
             new JButton("AirCraftAttack"),
             new JButton("RadarAttack"),
     };
+    private JLabel scoreboard1 = new JLabel();
+    private JLabel scoreboard2 = new JLabel();
 
     private static BufferedImage buttonImages[]=new BufferedImage[4];
 
@@ -77,36 +79,37 @@ public class GamePanel extends JPanel {
         status.setLocation(25, 4 * (height/8));
         menuPanel.add(status);
         int width = (int) (panel1.getPreferredSize().getWidth() * 2 + menuPanel.getPreferredSize().getWidth());
-        statusPanel.setPreferredSize(new Dimension(width, 55));
+        statusPanel.setPreferredSize(new Dimension(width, 65));
         statusPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         statusPanel.setLayout(null);
         chatArea.setSize(new Dimension(150, 35));
-        chatArea.addKeyListener(new KeyListener()
-        {
+        chatArea.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(KeyEvent keyEvent)
-            {
+            public void keyTyped(KeyEvent keyEvent) {
 
             }
 
             @Override
-            public void keyPressed(KeyEvent keyEvent)
-            {
-                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
-                {
+            public void keyPressed(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
                     runner.sendMessaege(chatArea.getText());
                     chatArea.setText("");
                 }
             }
 
             @Override
-            public void keyReleased(KeyEvent keyEvent)
-            {
+            public void keyReleased(KeyEvent keyEvent) {
 
             }
         });
         chatArea.setLocation((int) (panel1.getPreferredSize().getWidth() + 25), 10);
+        scoreboard1.setSize(new Dimension((int) panel1.getPreferredSize().getWidth(), 55));
+        scoreboard2.setSize(new Dimension((int) panel2.getPreferredSize().getWidth(), 55));
+        scoreboard1.setLocation(0, 10);
+        scoreboard2.setLocation((int) (panel1.getPreferredSize().getWidth() + menuPanel.getPreferredSize().getWidth()), 10);
         statusPanel.add(chatArea);
+        statusPanel.add(scoreboard1);
+        statusPanel.add(scoreboard2);
 
         add(menuPanel, BorderLayout.CENTER);
         add(panel1, BorderLayout.WEST);
@@ -120,5 +123,18 @@ public class GamePanel extends JPanel {
 
     public void addStatus(String message) {
         status.setText(message+'\n'+status.getText());
+    }
+
+    @Override
+    public void repaint() {
+        super.repaint();
+        if (panel1 == null || panel2 == null)
+            return;
+        Player player1 = panel1.getPlayer();
+        Player player2 = panel2.getPlayer();
+        scoreboard1.setText("<html> AirCrafts: " + player1.getNumOfAirCrafts() + "/" + 2 +
+                "<br>Radars: " + player1.getNumOfRadars() + "/" + 4 + "<br>Destroyed Squares: " + (16 - player1.getHealth()) + "</html>");
+        scoreboard2.setText("<html> AirCrafts: " + player2.getNumOfAirCrafts() + "/" + 2 +
+                "<br>Radars: " + player2.getNumOfRadars() + "/" + 4 + "<br>Destroyed Squares: " + (16 - player2.getHealth()) + "</html>");
     }
 }

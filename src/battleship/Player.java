@@ -35,6 +35,18 @@ public class Player
                 map[i][j]=new Square(i,j,this);
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getNumOfAirCrafts() {
+        return numOfAirCrafts;
+    }
+
+    public int getNumOfRadars() {
+        return numOfRadars;
+    }
+
     public int getWidth() {
         return width;
     }

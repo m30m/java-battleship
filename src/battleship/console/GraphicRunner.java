@@ -354,7 +354,7 @@ public class GraphicRunner extends Runner
         actionContainer.setTeamA(square.getOwner() == teamA);
         actionContainer.setX(square.getX());
         actionContainer.setY(square.getY());
-        networkHandler.sendObject(actionContainer);
+//        networkHandler.sendObject(actionContainer);
         clickedOnSquare(square, isRight);
     }
 
