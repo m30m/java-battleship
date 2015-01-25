@@ -24,6 +24,7 @@ public class GraphicSquare extends JComponent
     private static BufferedImage[] mine = new BufferedImage[2];
     private static BufferedImage[] antiaircraft = new BufferedImage[2];
     private static BufferedImage[] battleship = new BufferedImage[8];
+    private static BufferedImage broken;
 
     static {
         try {
@@ -33,6 +34,7 @@ public class GraphicSquare extends JComponent
             antiaircraft[1] = ImageIO.read(new File("src/images/antiaircraft1.png"));
             for (int i = 0; i < 8; i++)
                 battleship[i] = ImageIO.read(new File("src/images/battleship" + i + ".png"));
+            broken = ImageIO.read(new File("src/images/broken.png"));
         } catch (IOException e) {
         }
     }
@@ -92,21 +94,28 @@ public class GraphicSquare extends JComponent
         Graphics2D g2d = (Graphics2D) g;
         Color c = g2d.getColor();
         g2d.setColor(new Color(255, 230, 225));
-        boolean isMine = false;
+        boolean isMine = true;
         if (runner.isNetwork())
             isMine = (getSquare().getOwner() ==runner.getMyPlayer());
         if (runner.getState() == GameState.TeamAPlaying || runner.getState() == GameState.TeamBPlaying)
         {
-            if (square.isDestroyed())
-                g2d.setColor(new Color(0, 0, 0));
-            else if (square.isDetected() || isMine)
+            if (square.isDestroyed()) {
+                g2d.setColor(new Color(0, 0, 99));
+                g2d.fillRect(0, 0, SIZE, SIZE);
+                if (square.getPlacableWeaponry() instanceof Battleship) {
+                    g2d.drawImage(broken, 0, 0, null);
+                    g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
+                }
+            }
+            else if (square.isDetected() || (runner.isNetwork() && isMine) )
             {
                 g2d.setColor(new Color(153, 230, 255));
+                g2d.fillRect(0, 0, SIZE, SIZE);
                 if (square.getPlacableWeaponry() instanceof Battleship) {
                     g2d.drawImage(battleship[selectBattleshipImage()], 0, 0, null);
                     g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
                 }
-                else if (isMine)
+                else if (runner.isNetwork() && isMine)
                 {
                     if (square.getPlacableWeaponry() instanceof Mine)
                     {
@@ -124,9 +133,9 @@ public class GraphicSquare extends JComponent
         } else {
             if (!isMine)
                 return;
-            if (square.getPlacableWeaponry() == null)
-                g2d.setColor(new Color(153, 230, 255));
-            else if (square.getPlacableWeaponry() instanceof AntiAircraft){
+            g2d.setColor(new Color(153, 230, 255));
+            g2d.fillRect(0, 0, SIZE, SIZE);
+            if (square.getPlacableWeaponry() instanceof AntiAircraft){
                 g2d.drawImage(antiaircraft[SQUARE_STATE], 0, 0, null);
                 g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 0));
             }

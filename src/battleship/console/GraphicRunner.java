@@ -275,7 +275,8 @@ public class GraphicRunner extends Runner
         {
             CommandContainer command = new CommandContainer();
             command.setMessege("next");
-            networkHandler.sendObject(command);
+            if(isNetwork())
+                networkHandler.sendObject(command);
         }
         clickedOnButton(s);
     }

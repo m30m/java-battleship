@@ -83,7 +83,7 @@ public class Player
         for(int i=Math.max(0, x - 1);i<Math.min(x + 2, map.length);i++)
             for(int j=Math.max(0,y-1);j<Math.min(y+2,map[x].length);j++) {
                 getOpponent().getMap()[i][j].setDetected(true);
-                if (getOpponent().getMap()[i][j].getPlacableWeaponry() instanceof Battleship)
+                if (!getOpponent().getMap()[i][j].isDestroyed() && getOpponent().getMap()[i][j].getPlacableWeaponry() instanceof Battleship)
                     getRunner().radarDetect(this, i, j);
             }
 
@@ -98,7 +98,7 @@ public class Player
         if(numOfAirCrafts==2)
             throw new BattleshipException("Can't use aircraft anymore");
         numOfAirCrafts++;
-        if(getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
+        if(!getOpponent().getMap()[0][y].isDestroyed() && getOpponent().getMap()[0][y].getPlacableWeaponry() instanceof AntiAircraft )
         {
             normalAttack(0,y,"Aircraft");
             getRunner().aircraftUnsuccessful(this);

@@ -80,9 +80,6 @@ public class Square
             return;
         setDestroyed(true);
         if (placableWeaponry != null)
-        {
             placableWeaponry.attacked(x, y,attacker);
-            setPlacableWeaponry(null);
-        }
     }
 }
