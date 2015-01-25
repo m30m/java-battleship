@@ -24,6 +24,7 @@ public class GraphicRunner extends Runner
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
     private AttackType attackType = null;
+    private boolean isPaused;
 
     public GameState getState()
     {
@@ -111,6 +112,16 @@ public class GraphicRunner extends Runner
     public void sendMessage(Player player, String text)
     {
         gamePanel.addStatus((player != null ? player.getName() + ": " : "") + text);
+    }
+
+    public boolean isNetwork()
+    {
+        return networkHandler != null;
+    }
+
+    public boolean isPaused()
+    {
+        return isPaused;
     }
 
     class NetworkHandler implements Runnable
@@ -328,6 +339,13 @@ public class GraphicRunner extends Runner
         if (state == GameState.GameOver)
             return;
         String s = button.getText();
+        if (s.equals("Pause"))
+        {
+            isPaused = !isPaused;
+            return;
+        }
+        if (isPaused())
+            return;
         int so = state.ordinal();
         if (s.equals("Next"))
         {
@@ -347,20 +365,25 @@ public class GraphicRunner extends Runner
 
     public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
-        ActionContainer actionContainer = new ActionContainer();
-        actionContainer.setAttackType(attackType);
-        actionContainer.setRightClick(isRight);
         Square square = graphicSquare.getSquare();
-        actionContainer.setTeamA(square.getOwner() == teamA);
-        actionContainer.setX(square.getX());
-        actionContainer.setY(square.getY());
-//        networkHandler.sendObject(actionContainer);
+        if (isNetwork())
+        {
+            ActionContainer actionContainer = new ActionContainer();
+            actionContainer.setAttackType(attackType);
+            actionContainer.setRightClick(isRight);
+            actionContainer.setTeamA(square.getOwner() == teamA);
+            actionContainer.setX(square.getX());
+            actionContainer.setY(square.getY());
+            networkHandler.sendObject(actionContainer);
+        }
         clickedOnSquare(square, isRight);
     }
 
     public void clickedOnSquare(Square square, boolean isRight)
     {
         if (state == GameState.GameOver)
+            return;
+        if (isPaused())
             return;
         if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
             readPlayerMap(teamA, square, isRight);

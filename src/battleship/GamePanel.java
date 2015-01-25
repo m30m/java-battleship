@@ -32,7 +32,7 @@ public class GamePanel extends JPanel {
     };
     private JLabel scoreboard1 = new JLabel();
     private JLabel scoreboard2 = new JLabel();
-
+    private JButton pauseButton = new JButton("Pause");
     private static BufferedImage buttonImages[]=new BufferedImage[4];
 
     static {
@@ -107,9 +107,20 @@ public class GamePanel extends JPanel {
         scoreboard2.setSize(new Dimension((int) panel2.getPreferredSize().getWidth(), 55));
         scoreboard1.setLocation(0, 10);
         scoreboard2.setLocation((int) (panel1.getPreferredSize().getWidth() + menuPanel.getPreferredSize().getWidth()), 10);
+        pauseButton.setSize(80,20);
+        pauseButton.setLocation((int) (panel1.getPreferredSize().getWidth()*2 + menuPanel.getPreferredSize().getWidth())-pauseButton.getWidth(),40);
+        pauseButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                runner.clickedOnButton(pauseButton);
+            }
+        });
         statusPanel.add(chatArea);
         statusPanel.add(scoreboard1);
         statusPanel.add(scoreboard2);
+        statusPanel.add(pauseButton);
 
         add(menuPanel, BorderLayout.CENTER);
         add(panel1, BorderLayout.WEST);
@@ -122,7 +133,7 @@ public class GamePanel extends JPanel {
     }
 
     public void addStatus(String message) {
-        status.setText(message+'\n'+status.getText());
+        status.setText(message + '\n' + status.getText());
     }
 
     @Override
