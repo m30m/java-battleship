@@ -1,8 +1,11 @@
 package battleship.console;
 
 import battleship.*;
+import battleship.network.ActionContainer;
+import battleship.network.MessegeContainer;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
@@ -11,7 +14,8 @@ import java.util.Enumeration;
 /**
  * Created by The_CodeBreakeR on 1/20/15.
  */
-public class GraphicRunner extends Runner {
+public class GraphicRunner extends Runner
+{
 
     public static final int PORT = 8585;
     private GamePanel gamePanel;
@@ -19,11 +23,10 @@ public class GraphicRunner extends Runner {
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
-    private AttackType attackType=null;
-    private ObjectInputStream inputStream = null;
-    private ObjectOutputStream outputStream = null;
+    private AttackType attackType = null;
 
-    public GameState getState() {
+    public GameState getState()
+    {
         return state;
     }
 
@@ -43,11 +46,11 @@ public class GraphicRunner extends Runner {
         gamePanel.addStatus("team " + player.getName() + " detected " + x + "," + y);
     }
 
-    public void explode(Player player,int x, int y)
+    public void explode(Player player, int x, int y)
     {
         x++;
         y++;
-        gamePanel.addStatus("team "+player.getName()+" explode "+x+","+y);
+        gamePanel.addStatus("team " + player.getName() + " explode " + x + "," + y);
     }
 
     public void aircraftUnsuccessful(Player player)
@@ -62,19 +65,27 @@ public class GraphicRunner extends Runner {
     }
 
     @Override
-    protected void run() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+    protected void run()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
                 createAndShowGui();
-                new Thread(new Runnable() {
+                new Thread(new Runnable()
+                {
                     @Override
-                    public void run() {
-                        while (!state.equals(GameState.GameOver)) {
+                    public void run()
+                    {
+                        while (!state.equals(GameState.GameOver))
+                        {
                             GraphicSquare.changeState();
                             gamePanel.repaint();
-                            try {
+                            try
+                            {
                                 Thread.sleep(200);
-                            } catch (InterruptedException e) {
+                            } catch (InterruptedException e)
+                            {
                                 e.printStackTrace();
                             }
                         }
@@ -84,29 +95,127 @@ public class GraphicRunner extends Runner {
         });
     }
 
-    private void createAndShowGui() {
+    public void sendMessaege(String text)
+    {
+        if (networkHandler != null)
+        {
+            sendMessage(networkHandler.isTeamA ? teamA : teamB, text);
+            MessegeContainer messege = new MessegeContainer();
+            messege.setMessege(text);
+            networkHandler.sendObject(messege);
+        }
+        else
+            sendMessage(null, text);
+    }
+
+    public void sendMessage(Player player, String text)
+    {
+        gamePanel.addStatus((player != null ? player.getName() + ": " : "") + text);
+    }
+
+    class NetworkHandler implements Runnable
+    {
+        private ObjectInputStream inputStream = null;
+        private ObjectOutputStream outputStream = null;
+        boolean isTeamA;
+
+        @Override
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+
+                    Object object = inputStream.readObject();
+                    if (object instanceof ActionContainer)
+                    {
+                        ActionContainer actionContainer = (ActionContainer) object;
+                        Player player = actionContainer.isTeamA() ? teamA : teamB;
+                        Square square = player.getMap()[actionContainer.getX()][actionContainer.getY()];
+                        clickedOnSquare(square, actionContainer.isRightClick());
+                    }
+                    else if (object instanceof MessegeContainer)
+                    {
+                        sendMessage(isTeamA ? teamB : teamA, ((MessegeContainer) object).getMessege());
+                    }
+                } catch (IOException e)
+                {
+                    break;
+                } catch (ClassNotFoundException e)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void sendObject(Object object)
+        {
+            try
+            {
+                outputStream.writeObject(object);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        private String getIP()//Copy pasted from stackoverflow
+        {
+            String ip = "127.0.0.1";
+            try
+            {
+                Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+                for (; n.hasMoreElements(); )
+                {
+                    NetworkInterface e = n.nextElement();
+                    Enumeration<InetAddress> a = e.getInetAddresses();
+                    for (; a.hasMoreElements(); )
+                    {
+                        InetAddress addr = a.nextElement();
+                        System.out.println(addr.getHostAddress());
+                        if (!addr.getHostAddress().startsWith("127.") && !addr.getHostAddress().startsWith("0:"))
+                            ip = addr.getHostAddress();
+                    }
+                }
+            } catch (SocketException e)
+            {
+                return ip;
+            }
+            return ip;
+        }
+    }
+
+    NetworkHandler networkHandler = null;
+
+    private void createAndShowGui()
+    {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         gamePanel = new GamePanel();
         frame.getContentPane().add(gamePanel);
-        //Single/Multi Player
         Object[] gameModes = {"On single computer", "On network"};
         int gameMode = JOptionPane.showOptionDialog(frame, "Please select the game mode", "Battleship",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameModes, gameModes[0]);
         if (gameMode == 0)
         {
-            final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
-            final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
-            teamA = new Player(JOptionPane.showInputDialog("Player 1 enter your name please"), this, width, height);
-            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
+//            final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+//            final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
+            final int width = 10;
+            final int height = 10;
+//            teamA = new Player(JOptionPane.showInputDialog("Player 1 enter your name please"), this, width, height);
+//            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
+            teamA = new Player("Amin", this, width, height);
+            teamB = new Player("Taba", this, width, height);
             teamA.setOpponent(teamB);
             teamB.setOpponent(teamA);
             gamePanel.init(teamA, teamB, this);
             state = GameState.TeamAPlaceBattleship;
         }
-        else//Multiplayer
+        else//On network
         {
+            networkHandler = new NetworkHandler();
             final String name = JOptionPane.showInputDialog("Please enter your name");
             Object[] options = {"Host a server", "Connect to another server"};
             int connection = JOptionPane.showOptionDialog(frame, "How do you want to start the game?", "Battleship",
@@ -115,12 +224,13 @@ public class GraphicRunner extends Runner {
             {
                 if (connection == 0)//Server
                 {
+                    networkHandler.isTeamA = true;
                     final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
                     final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
                     teamA = new Player(name, this, width, height);
                     final ServerSocket serverSocket = new ServerSocket(PORT, 2);
-//                    JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :"+getIP(), JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{"Cancel"}, null); TODO:make cancel work
-                    final JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :" + getIP(), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+//                    JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :"+networkHandler.getIP(), JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{"Cancel"}, null); TODO:make cancel work
+                    final JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :" + networkHandler.getIP(), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
                     final JDialog dialog = pane.createDialog(null, "Waiting for connection");
                     Thread thread = new Thread(new Runnable()
                     {
@@ -130,12 +240,12 @@ public class GraphicRunner extends Runner {
                             try
                             {
                                 Socket socket = serverSocket.accept();
-                                outputStream = new ObjectOutputStream(socket.getOutputStream());
-                                inputStream = new ObjectInputStream(socket.getInputStream());
-                                outputStream.writeObject(name);
-                                outputStream.writeObject(width);
-                                outputStream.writeObject(height);
-                                String otherName = (String) inputStream.readObject();
+                                networkHandler.outputStream = new ObjectOutputStream(socket.getOutputStream());
+                                networkHandler.inputStream = new ObjectInputStream(socket.getInputStream());
+                                networkHandler.outputStream.writeObject(name);
+                                networkHandler.outputStream.writeObject(width);
+                                networkHandler.outputStream.writeObject(height);
+                                String otherName = (String) networkHandler.inputStream.readObject();
                                 teamB = new Player(otherName, GraphicRunner.this, width, height);
                                 pane.setMessage(otherName + " connected.");
                                 Thread.sleep(3000);
@@ -152,7 +262,7 @@ public class GraphicRunner extends Runner {
                 }
                 else//Client
                 {
-
+                    networkHandler.isTeamA = false;
                     final String host = JOptionPane.showInputDialog("Enter host address:", "127.0.0.1");
                     final JOptionPane pane = new JOptionPane("Connecting to " + host, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
                     final JDialog dialog = pane.createDialog(null, "Connecting...");
@@ -161,17 +271,17 @@ public class GraphicRunner extends Runner {
                         @Override
                         public void run()
                         {
-                            while (inputStream == null)
+                            while (networkHandler.inputStream == null)
                             {
                                 try
                                 {
                                     Socket socket = new Socket(host, PORT);
-                                    outputStream = new ObjectOutputStream(socket.getOutputStream());
-                                    inputStream = new ObjectInputStream(socket.getInputStream());
-                                    outputStream.writeObject(name);
-                                    String otherName = (String) inputStream.readObject();
-                                    int width = (Integer) inputStream.readObject();
-                                    int height = (Integer) inputStream.readObject();
+                                    networkHandler.outputStream = new ObjectOutputStream(socket.getOutputStream());
+                                    networkHandler.inputStream = new ObjectInputStream(socket.getInputStream());
+                                    networkHandler.outputStream.writeObject(name);
+                                    String otherName = (String) networkHandler.inputStream.readObject();
+                                    int width = (Integer) networkHandler.inputStream.readObject();
+                                    int height = (Integer) networkHandler.inputStream.readObject();
                                     System.out.println("Width : " + width + " Height: " + height);
                                     teamB = new Player(name, GraphicRunner.this, width, height);
                                     teamA = new Player(otherName, GraphicRunner.this, width, height);
@@ -205,76 +315,66 @@ public class GraphicRunner extends Runner {
             teamB.setOpponent(teamA);
             gamePanel.init(teamA, teamB, this);
             state = GameState.TeamAPlaceBattleship;
+            Thread thread = new Thread(networkHandler);
+            thread.start();
         }
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    private String getIP()//Copy pasted from stackoverflow
+    public void clickedOnButton(JButton button)
     {
-        String ip = "127.0.0.1";
-        try
-        {
-            Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-            for (; n.hasMoreElements(); )
-            {
-                NetworkInterface e = n.nextElement();
-                Enumeration<InetAddress> a = e.getInetAddresses();
-                for (; a.hasMoreElements(); )
-                {
-                    InetAddress addr = a.nextElement();
-                    if (addr.getHostAddress().startsWith("192."))
-                        ip = addr.getHostAddress();
-                }
-            }
-        } catch (SocketException e)
-        {
-            return ip;
-        }
-        return ip;
-    }
-
-    public void clickedOnMenuButton(JButton button)
-    {
-        if(state==GameState.GameOver)
+        if (state == GameState.GameOver)
             return;
-        String s=button.getText();
-        int so=state.ordinal();
-        if(s.equals("Next"))
+        String s = button.getText();
+        int so = state.ordinal();
+        if (s.equals("Next"))
         {
-            if(so==1 || so==2 || so==4 || so==5)
+            if (so == 1 || so == 2 || so == 4 || so == 5)
                 state = GameState.values()[state.ordinal() + 1];
         }
-        else if(s.equals("NormalAttack"))
-            attackType=AttackType.Normal;
-        else if(s.equals("AirCraftAttack"))
-            attackType=AttackType.AirCraft;
+        else if (s.equals("NormalAttack"))
+            attackType = AttackType.Normal;
+        else if (s.equals("AirCraftAttack"))
+            attackType = AttackType.AirCraft;
         else
-            attackType=AttackType.Radar;
-        if(so<6)
-            attackType=null;
+            attackType = AttackType.Radar;
+        if (so < 6)
+            attackType = null;
         gamePanel.repaint();
     }
 
-    public void clickedOnSquare(GraphicSquare graphicSquare, boolean isRight)
+    public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
-        if(state==GameState.GameOver)
+        ActionContainer actionContainer = new ActionContainer();
+        actionContainer.setAttackType(attackType);
+        actionContainer.setRightClick(isRight);
+        Square square = graphicSquare.getSquare();
+        actionContainer.setTeamA(square.getOwner() == teamA);
+        actionContainer.setX(square.getX());
+        actionContainer.setY(square.getY());
+        networkHandler.sendObject(actionContainer);
+        clickedOnSquare(square, isRight);
+    }
+
+    public void clickedOnSquare(Square square, boolean isRight)
+    {
+        if (state == GameState.GameOver)
             return;
         if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
-            readPlayerMap(teamA, graphicSquare, isRight);
+            readPlayerMap(teamA, square, isRight);
         else if (state.ordinal() < GameState.TeamAPlaying.ordinal())
-            readPlayerMap(teamB, graphicSquare, isRight);
+            readPlayerMap(teamB, square, isRight);
         else
         {
-            Player attacker=teamA;
-            if(state==GameState.TeamBPlaying)
-                attacker=teamB;
-            try {
-                if (graphicSquare.getSquare().getOwner() == attacker)
+            Player attacker = getAttacker();
+            try
+            {
+                if (square.getOwner() == attacker)
                     throw new BattleshipException("Clicking on the other player's map");
-                int x = graphicSquare.getSquare().getX();
-                int y = graphicSquare.getSquare().getY();
+                int x = square.getX();
+                int y = square.getY();
                 if (attackType == AttackType.Normal)
                     attacker.normalAttack(x, y, "Normal");
                 else if (attackType == AttackType.AirCraft)
@@ -287,8 +387,7 @@ public class GraphicRunner extends Runner {
                     state = GameState.TeamAPlaying;
                 else
                     state = GameState.TeamBPlaying;
-            }
-            catch (BattleshipException e)
+            } catch (BattleshipException e)
             {
                 gamePanel.addStatus(e.getMessage());
                 return;
@@ -301,51 +400,59 @@ public class GraphicRunner extends Runner {
             numOfAntiaircrafts = 0;
             state = GameState.values()[state.ordinal() + 1];
         }
-        attackType=null;
+        attackType = null;
         gamePanel.repaint();
         if (teamA.isLost())
         {
             gamePanel.showGameOverMessage("team " + teamB.getName() + " wins");
             gamePanel.addStatus("team " + teamB.getName() + " wins");
-            state=GameState.GameOver;
+            state = GameState.GameOver;
             return;
         }
         if (teamB.isLost())
         {
             gamePanel.showGameOverMessage("team " + teamA.getName() + " wins");
             gamePanel.addStatus("team " + teamA.getName() + " wins");
-            state=GameState.GameOver;
+            state = GameState.GameOver;
             return;
         }
     }
 
-    private void readPlayerMap(Player player, GraphicSquare graphicSquare, boolean isRight)
+    private Player getAttacker()
+    {
+        Player attacker = teamA;
+        if (state == GameState.TeamBPlaying)
+            attacker = teamB;
+        return attacker;
+    }
+
+    private void readPlayerMap(Player player, Square square, boolean isRight)
     {
         try
         {
-            if (graphicSquare.getSquare().getOwner() != player)
+            if (square.getOwner() != player)
                 throw new BattleshipException("Clicking on the other player's map");
             if (state == GameState.TeamAPlaceMine || state == GameState.TeamBPlaceMine)
             {
-                new Mine(player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY());
+                new Mine(player, square.getX(), square.getY());
                 numOfMines++;
             }
             else if (state == GameState.TeamAPlaceAntiaircraft || state == GameState.TeamBPlaceAntiaircraft)
             {
-                new AntiAircraft(player, graphicSquare.getSquare().getY());
+                new AntiAircraft(player, square.getY());
                 numOfAntiaircrafts++;
             }
             else
             {
-                new Battleship(player, graphicSquare.getSquare().getX(), graphicSquare.getSquare().getY(),
+                new Battleship(player, square.getX(), square.getY(),
                         LENGTH_OF_BATTLESHIP[numOfBattleships], isRight);
                 numOfBattleships++;
             }
-        }
-        catch (BattleshipException e)
+        } catch (BattleshipException e)
         {
             gamePanel.addStatus(e.getMessage());
             return;
         }
     }
+
 }

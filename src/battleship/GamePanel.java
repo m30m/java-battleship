@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,8 @@ public class GamePanel extends JPanel {
     private BattleshipPanel panel2;
     private JPanel menuPanel = new JPanel();
     private JTextArea status=new JTextArea("Welcome, please build your maps!");
+    private JTextField chatArea = new JTextField("");
+    private JPanel statusPanel = new JPanel();
     private JButton[] buttons={
             new JButton("Next"),
             new JButton("NormalAttack"),
@@ -55,7 +59,7 @@ public class GamePanel extends JPanel {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    runner.clickedOnMenuButton(button);
+                    runner.clickedOnButton(button);
                 }
             });
             button.setSize(new Dimension(150,height/9));
@@ -72,9 +76,42 @@ public class GamePanel extends JPanel {
         status.setLineWrap(true);
         status.setLocation(25, 4 * (height/8));
         menuPanel.add(status);
+        int width = (int) (panel1.getPreferredSize().getWidth() * 2 + menuPanel.getPreferredSize().getWidth());
+        statusPanel.setPreferredSize(new Dimension(width, 55));
+        statusPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        statusPanel.setLayout(null);
+        chatArea.setSize(new Dimension(150, 35));
+        chatArea.addKeyListener(new KeyListener()
+        {
+            @Override
+            public void keyTyped(KeyEvent keyEvent)
+            {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent)
+            {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    runner.sendMessaege(chatArea.getText());
+                    chatArea.setText("");
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent)
+            {
+
+            }
+        });
+        chatArea.setLocation((int) (panel1.getPreferredSize().getWidth() + 25), 10);
+        statusPanel.add(chatArea);
+
         add(menuPanel, BorderLayout.CENTER);
         add(panel1, BorderLayout.WEST);
         add(panel2, BorderLayout.EAST);
+        add(statusPanel, BorderLayout.PAGE_END);
     }
 
     public void showGameOverMessage (String message) {

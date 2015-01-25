@@ -52,7 +52,7 @@ public class GraphicSquare extends JComponent
             @Override
             public void mouseClicked(MouseEvent mouseEvent)
             {
-                runner.clickedOnSquare(GraphicSquare.this, mouseEvent.getButton() == 3);
+                runner.sendClickOnSquare(GraphicSquare.this, mouseEvent.getButton() == 3);
             }
 
             @Override
