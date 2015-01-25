@@ -57,10 +57,11 @@ public class NetworkHandler implements Runnable
                 else if (object instanceof CommandContainer)
                 {
                     String s=((CommandContainer) object).getMessege();
-                    if(s.equals("next"))
-                        runner.clickedOnButton("Next");
-//                    else if(s.equals("pause"))
-//
+                    if(s.equals("Next"))
+                        runner.clickedOnButton(s,runner.getOtherPlayer());
+                    else if(s.equals("Pause"))
+                        runner.clickedOnButton(s,runner.getOtherPlayer());
+
                 }
             } catch (IOException e)
             {
