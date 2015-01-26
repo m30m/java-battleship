@@ -384,7 +384,6 @@ public class GraphicRunner extends Runner
             numOfAntiaircrafts = 0;
             state = GameState.values()[state.ordinal() + 1];
         }
-        attackType = null;
         gamePanel.repaint();
         if (teamA.isLost())
         {
