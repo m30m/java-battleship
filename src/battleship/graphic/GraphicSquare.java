@@ -107,7 +107,7 @@ public class GraphicSquare extends JComponent
         boolean isMine = true;
         if (runner.isNetwork())
             isMine = (getSquare().getOwner() ==runner.getMyPlayer());
-        if (runner.getState() == GameState.TeamAPlaying || runner.getState() == GameState.TeamBPlaying)
+        if (runner.getState() == GameState.Playing)
         {
             if (square.isDestroyed()) {
                 g2d.setColor(new Color(0, 0, 99));

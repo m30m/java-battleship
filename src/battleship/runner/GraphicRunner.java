@@ -356,7 +356,7 @@ public class GraphicRunner extends Runner
     public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
         Square square = graphicSquare.getSquare();
-        if (isNetwork() && state.ordinal() < GameState.TeamAPlaying.ordinal() && square.getOwner() != getMyPlayer())
+        if (isNetwork() && state.ordinal() < GameState.Playing.ordinal() && square.getOwner() != getMyPlayer())
             return;
         if (isNetwork())
         {
@@ -368,7 +368,7 @@ public class GraphicRunner extends Runner
             actionContainer.setY(square.getY());
             networkHandler.sendObject(actionContainer);
         }
-        clickedOnSquare(square, isRight);
+        clickedOnSquare(square, isRight,attackType);
     }
 
     /**
@@ -376,7 +376,7 @@ public class GraphicRunner extends Runner
      * @param square the square that we clicked on it
      * @param isRight if we used right click
      */
-    public void clickedOnSquare(Square square, boolean isRight)
+    public void clickedOnSquare(Square square, boolean isRight,AttackType attackType)
     {
         if (state == GameState.GameOver)
             return;
@@ -384,29 +384,65 @@ public class GraphicRunner extends Runner
             return;
         if (state.ordinal() < GameState.TeamBPlaceBattleship.ordinal())
             readPlayerMap(teamA, square, isRight);
-        else if (state.ordinal() < GameState.TeamAPlaying.ordinal())
+        else if (state.ordinal() < GameState.Playing.ordinal())
             readPlayerMap(teamB, square, isRight);
         else
         {
-            final Player attacker = getAttacker();
+            final Player attacker = square.getOwner()==getMyPlayer()?getOtherPlayer():getMyPlayer();
             try
             {
-                if (square.getOwner() == attacker)
-                    throw new BattleshipException("Clicking on the other player's map");
                 final int x = square.getX();
                 final int y = square.getY();
                 if (attackType == AttackType.Normal)
-                    attacker.normalAttack(x, y, "Normal");
+                    new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(1000);
+                                attacker.normalAttack(x, y, "Normal");
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 else if (attackType == AttackType.AirCraft)
-                    attacker.aircraftAttack(y);
+                    new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(2000);
+                                attacker.aircraftAttack(y);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 else if (attackType == AttackType.Radar)
-                    attacker.radarAttack(x, y);
+                    new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(2000);
+                                attacker.radarAttack(x, y);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 else
                     throw new BattleshipException("Null attack");
-                if (state == GameState.TeamBPlaying)
-                    state = GameState.TeamAPlaying;
-                else
-                    state = GameState.TeamBPlaying;
             } catch (BattleshipException e)
             {
                 gamePanel.addStatus(e.getMessage());
@@ -435,14 +471,6 @@ public class GraphicRunner extends Runner
             state = GameState.GameOver;
             return;
         }
-    }
-
-    private Player getAttacker()
-    {
-        Player attacker = teamA;
-        if (state == GameState.TeamBPlaying)
-            attacker = teamB;
-        return attacker;
     }
 
     /**
@@ -534,7 +562,7 @@ public class GraphicRunner extends Runner
                         Player player = actionContainer.isTeamA() ? getTeamA() : getTeamB();
                         Square square = player.getMap()[actionContainer.getX()][actionContainer.getY()];
                         setAttackType(actionContainer.getAttackType());
-                        clickedOnSquare(square, actionContainer.isRightClick());
+                        clickedOnSquare(square, actionContainer.isRightClick(),actionContainer.getAttackType());
                     }
                     else if (object instanceof MessegeContainer)
                     {
