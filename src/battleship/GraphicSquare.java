@@ -39,10 +39,19 @@ public class GraphicSquare extends JComponent
         }
     }
 
+    /**
+     * Changing the state of square
+     * For changing the color of mines and size of antiaircrafts
+     */
     public static void changeState(){
         SQUARE_STATE=1-SQUARE_STATE;
     }
 
+    /**
+     * Make a graphic square
+     * @param square square that we want to make a graphic square for it
+     * @param runner the runner that use the square
+     */
     public GraphicSquare(Square square, final GraphicRunner runner)
     {
         this.runner = runner;
@@ -152,6 +161,10 @@ public class GraphicSquare extends JComponent
         g2d.fillRect(0, 0, SIZE, SIZE);
     }
 
+    /**
+     * return the index of the image that we should use for a square of battleship
+     * @return
+     */
     private int selectBattleshipImage() {
         Battleship battleship=(Battleship) square.getPlacableWeaponry();
         if(battleship.isVertical())

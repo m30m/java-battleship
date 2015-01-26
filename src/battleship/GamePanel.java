@@ -45,6 +45,15 @@ public class GamePanel extends JPanel {
         }
     }
 
+    /**
+     * create the game panel that contains four main panel
+     * 2 battleship panel for 2 players,
+     * a menu panel between them,
+     * and status panel under the other panels
+     * @param p1
+     * @param p2
+     * @param runner
+     */
     public GamePanel(Player p1, Player p2, final GraphicRunner runner)
     {
         setLayout(new BorderLayout());
@@ -130,10 +139,18 @@ public class GamePanel extends JPanel {
         add(statusPanel, BorderLayout.PAGE_END);
     }
 
+    /**
+     * the message that wil be shown at the end of the game
+     * @param message the given message
+     */
     public void showGameOverMessage (String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
+    /**
+     * add a new message to the status area
+     * @param message the given message
+     */
     public void addStatus(String message) {
         status.setText(message + '\n' + status.getText());
     }

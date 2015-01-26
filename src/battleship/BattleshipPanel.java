@@ -19,6 +19,11 @@ public class BattleshipPanel extends JComponent
     private GraphicSquare[][] map;
     private GraphicRunner runner;
 
+    /**
+     * create a BattleshipPanel that contains the map of squares of the player
+     * @param p the player who the panel belongs to
+     * @param runner the runner
+     */
     public BattleshipPanel(Player p, GraphicRunner runner)
     {
         this.runner = runner;

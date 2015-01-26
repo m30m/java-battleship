@@ -290,6 +290,11 @@ public class GraphicRunner extends Runner
         clickedOnButton(s, getMyPlayer());
     }
 
+    /**
+     * will be called when we click on a button, to decide what to do...
+     * @param s the name of the button
+     * @param player the player who clicked on the button
+     */
     public void clickedOnButton(String s, Player player)
     {
         if (state == GameState.GameOver)
@@ -340,6 +345,11 @@ public class GraphicRunner extends Runner
         clickedOnSquare(square, isRight);
     }
 
+    /**
+     * is called when we click on a square, to decide what to do
+     * @param square the square that we clicked on it
+     * @param isRight if we used right click
+     */
     public void clickedOnSquare(Square square, boolean isRight)
     {
         if (state == GameState.GameOver)
@@ -409,6 +419,12 @@ public class GraphicRunner extends Runner
         return attacker;
     }
 
+    /**
+     * create and place an equipment in the map of the given player
+     * @param player the player who wants to place his equipment in the map
+     * @param square the square that the player clicked on it
+     * @param isRight if we used right click
+     */
     private void readPlayerMap(Player player, Square square, boolean isRight)
     {
         try
