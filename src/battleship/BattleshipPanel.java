@@ -19,7 +19,7 @@ public class BattleshipPanel extends JComponent
     private GraphicSquare[][] map;
     private GraphicRunner runner;
 
-    public void init(Player p, GraphicRunner runner)
+    public BattleshipPanel(Player p, GraphicRunner runner)
     {
         this.runner = runner;
         player=p;

@@ -4,13 +4,13 @@ import battleship.*;
 import battleship.network.ActionContainer;
 import battleship.network.CommandContainer;
 import battleship.network.MessegeContainer;
-import battleship.network.NetworkHandler;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Enumeration;
 
 /**
  * Created by The_CodeBreakeR on 1/20/15.
@@ -21,14 +21,15 @@ public class GraphicRunner extends Runner
     public static final int PORT = 8585;
     protected static final int[] LENGTH_OF_BATTLESHIP = new int[]{4, 3, 3, 2, 2, 1, 1};
     NetworkHandler networkHandler = null;
+    Player pausedPlayer;
     private GamePanel gamePanel;
     private int numOfBattleships = 0;
     private int numOfMines = 0;
     private int numOfAntiaircrafts = 0;
     private AttackType attackType = null;
     private boolean isPaused;
-    Player pausedPlayer;
     private GameState state;
+    private JFrame frame;
 
     public void setAttackType(AttackType attackType)
     {
@@ -138,11 +139,8 @@ public class GraphicRunner extends Runner
 
     private void createAndShowGui()
     {
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        gamePanel = new GamePanel();
-        frame.getContentPane().add(gamePanel);
         Object[] gameModes = {"On single computer", "On network"};
         int gameMode = JOptionPane.showOptionDialog(frame, "Please select the game mode", "Battleship",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameModes, gameModes[0]);
@@ -156,118 +154,120 @@ public class GraphicRunner extends Runner
 //            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
             teamA = new Player("Amin", this, width, height);
             teamB = new Player("Taba", this, width, height);
-            teamA.setOpponent(teamB);
-            teamB.setOpponent(teamA);
-            gamePanel.init(teamA, teamB, this);
-            state = GameState.TeamAPlaceBattleship;
         }
         else//On network
         {
-            networkHandler = new NetworkHandler(this);
-            final String name = JOptionPane.showInputDialog("Please enter your name");
-            Object[] options = {"Host a server", "Connect to another server"};
-            int connection = JOptionPane.showOptionDialog(frame, "How do you want to start the game?", "Battleship",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            try
+            if (!establishNetwork()) return;
+        }
+        teamA.setOpponent(teamB);
+        teamB.setOpponent(teamA);
+        state = GameState.TeamAPlaceBattleship;
+        gamePanel = new GamePanel(teamA, teamB, this);
+        frame.getContentPane().add(gamePanel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private boolean establishNetwork()
+    {
+        networkHandler = new NetworkHandler();
+        final String name = JOptionPane.showInputDialog("Please enter your name");
+        Object[] options = {"Host a server", "Connect to another server"};
+        int connection = JOptionPane.showOptionDialog(frame, "How do you want to start the game?", "Battleship",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        try
+        {
+            if (connection == 0)//Server
             {
-                if (connection == 0)//Server
+                networkHandler.isTeamA = true;
+                final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+                final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
+                teamA = new Player(name, this, width, height);
+                final ServerSocket serverSocket = new ServerSocket(PORT, 2);
+                final JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :" + networkHandler.getIP(), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+                final JDialog dialog = pane.createDialog(null, "Waiting for connection");
+                Thread thread = new Thread(new Runnable()
                 {
-                    networkHandler.isTeamA = true;
-                    final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
-                    final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
-                    teamA = new Player(name, this, width, height);
-                    final ServerSocket serverSocket = new ServerSocket(PORT, 2);
-//                    JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :"+networkHandler.getIP(), JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{"Cancel"}, null); TODO:make cancel work
-                    final JOptionPane pane = new JOptionPane("Waiting for client...\nHost address is :" + networkHandler.getIP(), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
-                    final JDialog dialog = pane.createDialog(null, "Waiting for connection");
-                    Thread thread = new Thread(new Runnable()
+                    @Override
+                    public void run()
                     {
-                        @Override
-                        public void run()
+                        try
+                        {
+                            Socket socket = serverSocket.accept();
+                            networkHandler.outputStream = new ObjectOutputStream(socket.getOutputStream());
+                            networkHandler.inputStream = new ObjectInputStream(socket.getInputStream());
+                            networkHandler.outputStream.writeObject(name);
+                            networkHandler.outputStream.writeObject(width);
+                            networkHandler.outputStream.writeObject(height);
+                            String otherName = (String) networkHandler.inputStream.readObject();
+                            teamB = new Player(otherName, GraphicRunner.this, width, height);
+                            pane.setMessage(otherName + " connected.");
+                            Thread.sleep(3000);
+                            dialog.dispose();
+
+                        } catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+                dialog.setVisible(true);
+            }
+            else//Client
+            {
+                networkHandler.isTeamA = false;
+                final String host = JOptionPane.showInputDialog("Enter host address:", "127.0.0.1");
+                final JOptionPane pane = new JOptionPane("Connecting to " + host, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+                final JDialog dialog = pane.createDialog(null, "Connecting...");
+                final Thread thread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        while (networkHandler.inputStream == null)
                         {
                             try
                             {
-                                Socket socket = serverSocket.accept();
+                                Socket socket = new Socket(host, PORT);
                                 networkHandler.outputStream = new ObjectOutputStream(socket.getOutputStream());
                                 networkHandler.inputStream = new ObjectInputStream(socket.getInputStream());
                                 networkHandler.outputStream.writeObject(name);
-                                networkHandler.outputStream.writeObject(width);
-                                networkHandler.outputStream.writeObject(height);
                                 String otherName = (String) networkHandler.inputStream.readObject();
-                                teamB = new Player(otherName, GraphicRunner.this, width, height);
-                                pane.setMessage(otherName + " connected.");
+                                int width = (Integer) networkHandler.inputStream.readObject();
+                                int height = (Integer) networkHandler.inputStream.readObject();
+                                teamB = new Player(name, GraphicRunner.this, width, height);
+                                teamA = new Player(otherName, GraphicRunner.this, width, height);
+                                pane.setMessage("Connected to " + otherName);
                                 Thread.sleep(3000);
                                 dialog.dispose();
 
                             } catch (Exception e)
                             {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    thread.start();
-                    dialog.setVisible(true);
-                }
-                else//Client
-                {
-                    networkHandler.isTeamA = false;
-                    final String host = JOptionPane.showInputDialog("Enter host address:", "127.0.0.1");
-                    final JOptionPane pane = new JOptionPane("Connecting to " + host, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
-                    final JDialog dialog = pane.createDialog(null, "Connecting...");
-                    final Thread thread = new Thread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            while (networkHandler.inputStream == null)
-                            {
                                 try
                                 {
-                                    Socket socket = new Socket(host, PORT);
-                                    networkHandler.outputStream = new ObjectOutputStream(socket.getOutputStream());
-                                    networkHandler.inputStream = new ObjectInputStream(socket.getInputStream());
-                                    networkHandler.outputStream.writeObject(name);
-                                    String otherName = (String) networkHandler.inputStream.readObject();
-                                    int width = (Integer) networkHandler.inputStream.readObject();
-                                    int height = (Integer) networkHandler.inputStream.readObject();
-                                    teamB = new Player(name, GraphicRunner.this, width, height);
-                                    teamA = new Player(otherName, GraphicRunner.this, width, height);
-                                    pane.setMessage("Connected to " + otherName);
-                                    Thread.sleep(3000);
-                                    dialog.dispose();
-
-                                } catch (Exception e)
+                                    Thread.sleep(1000);//Trying to establish a connection every 1 second
+                                } catch (InterruptedException e1)
                                 {
-                                    try
-                                    {
-                                        Thread.sleep(1000);//Trying to establish a connection every 1 second
-                                    } catch (InterruptedException e1)
-                                    {
-                                        e1.printStackTrace();
-                                    }
+                                    e1.printStackTrace();
                                 }
                             }
                         }
-                    });
-                    thread.start();
-                    dialog.setVisible(true);
+                    }
+                });
+                thread.start();
+                dialog.setVisible(true);
 
-                }
-            } catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(frame, "An error occurred, please try again");
-                return;
             }
-            teamA.setOpponent(teamB);
-            teamB.setOpponent(teamA);
-            gamePanel.init(teamA, teamB, this);
-            state = GameState.TeamAPlaceBattleship;
-            Thread thread = new Thread(networkHandler);
-            thread.start();
+        } catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(frame, "An error occurred, please try again");
+            return false;
         }
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        Thread thread = new Thread(networkHandler);
+        thread.start();
+        return true;
     }
 
     public void sendClickOnButton(String s)
@@ -325,7 +325,7 @@ public class GraphicRunner extends Runner
     public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
         Square square = graphicSquare.getSquare();
-        if(isNetwork() && state.ordinal() < GameState.TeamAPlaying.ordinal() && square.getOwner() != getMyPlayer())
+        if (isNetwork() && state.ordinal() < GameState.TeamAPlaying.ordinal() && square.getOwner() != getMyPlayer())
             return;
         if (isNetwork())
         {
@@ -360,53 +360,11 @@ public class GraphicRunner extends Runner
                 final int x = square.getX();
                 final int y = square.getY();
                 if (attackType == AttackType.Normal)
-                    new Thread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                Thread.sleep(1000);
-                                attacker.normalAttack(x, y, "Normal");
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
+                    attacker.normalAttack(x, y, "Normal");
                 else if (attackType == AttackType.AirCraft)
-                    new Thread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                Thread.sleep(2000);
-                                attacker.aircraftAttack(y);
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
+                    attacker.aircraftAttack(y);
                 else if (attackType == AttackType.Radar)
-                    new Thread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                Thread.sleep(2000);
-                                attacker.radarAttack(x, y);
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
+                    attacker.radarAttack(x, y);
                 else
                     throw new BattleshipException("Null attack");
                 if (state == GameState.TeamBPlaying)
@@ -426,7 +384,6 @@ public class GraphicRunner extends Runner
             numOfAntiaircrafts = 0;
             state = GameState.values()[state.ordinal() + 1];
         }
-        attackType = null;
         gamePanel.repaint();
         if (teamA.isLost())
         {
@@ -503,5 +460,92 @@ public class GraphicRunner extends Runner
         if (isNetwork())
             return networkHandler.isTeamA() ? teamB : teamA;
         return teamB;
+    }
+
+    public class NetworkHandler implements Runnable
+    {
+        public boolean isTeamA;
+        private ObjectInputStream inputStream = null;
+        private ObjectOutputStream outputStream = null;
+
+        public boolean isTeamA()
+        {
+            return isTeamA;
+        }
+
+        @Override
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+
+                    Object object = inputStream.readObject();
+                    if (object instanceof ActionContainer)
+                    {
+                        ActionContainer actionContainer = (ActionContainer) object;
+                        Player player = actionContainer.isTeamA() ? getTeamA() : getTeamB();
+                        Square square = player.getMap()[actionContainer.getX()][actionContainer.getY()];
+                        setAttackType(actionContainer.getAttackType());
+                        clickedOnSquare(square, actionContainer.isRightClick());
+                    }
+                    else if (object instanceof MessegeContainer)
+                    {
+                        sendMessage(isTeamA ? getTeamB() : getTeamA(), ((MessegeContainer) object).getMessege());
+                    }
+                    else if (object instanceof CommandContainer)
+                    {
+                        String s = ((CommandContainer) object).getMessege();
+                        if (s.equals("Next"))
+                            clickedOnButton(s, getOtherPlayer());
+                        else if (s.equals("Pause"))
+                            clickedOnButton(s, getOtherPlayer());
+
+                    }
+                } catch (IOException e)
+                {
+                    break;
+                } catch (ClassNotFoundException e)
+                {
+                    break;
+                }
+            }
+        }
+
+        public void sendObject(Object object)
+        {
+            try
+            {
+                outputStream.writeObject(object);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        public String getIP()//Copy pasted from stackoverflow
+        {
+            String ip = "127.0.0.1";
+            try
+            {
+                Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+                for (; n.hasMoreElements(); )
+                {
+                    NetworkInterface e = n.nextElement();
+                    Enumeration<InetAddress> a = e.getInetAddresses();
+                    for (; a.hasMoreElements(); )
+                    {
+                        InetAddress addr = a.nextElement();
+                        if (!addr.getHostAddress().startsWith("127.") && !addr.getHostAddress().startsWith("0:"))
+                            ip = addr.getHostAddress();
+                    }
+                }
+            } catch (SocketException e)
+            {
+                return ip;
+            }
+            return ip;
+        }
     }
 }

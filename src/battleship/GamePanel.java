@@ -18,17 +18,18 @@ import java.io.IOException;
  */
 public class GamePanel extends JPanel {
 
+    private final GraphicRunner runner;
     private BattleshipPanel panel1;
     private BattleshipPanel panel2;
     private JPanel menuPanel = new JPanel();
     private JTextArea status=new JTextArea("Welcome, please build your maps!");
     private JTextField chatArea = new JTextField("");
     private JPanel statusPanel = new JPanel();
-    private JButton[] buttons={
+    private AbstractButton[] buttons={
             new JButton("Next"),
-            new JButton("NormalAttack"),
-            new JButton("AirCraftAttack"),
-            new JButton("RadarAttack"),
+            new JToggleButton("NormalAttack"),
+            new JToggleButton("AirCraftAttack"),
+            new JToggleButton("RadarAttack"),
     };
     private JLabel scoreboard1 = new JLabel();
     private JLabel scoreboard2 = new JLabel();
@@ -44,20 +45,21 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public void init(Player p1, Player p2, final GraphicRunner runner)
+    public GamePanel(Player p1, Player p2, final GraphicRunner runner)
     {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel1 = new BattleshipPanel();
-        panel1.init(p1, runner);
-        panel2 = new BattleshipPanel();
-        panel2.init(p2, runner);
+        this.runner = runner;
+        panel1 = new BattleshipPanel(p1, this.runner);
+        panel2 = new BattleshipPanel(p2, runner);
         int height = p1.getHeight() * GraphicSquare.SIZE;
         menuPanel.setPreferredSize(new Dimension(200, height));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         menuPanel.setLayout(null);
+        ButtonGroup buttonGroup = new ButtonGroup();
         for(int i=0;i<4;i++) {
-            final JButton button=buttons[i];
+            final AbstractButton button=buttons[i];
+            buttonGroup.add(button);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
@@ -147,5 +149,17 @@ public class GamePanel extends JPanel {
                 "<br>Radars: " + player1.getNumOfRadars() + "/" + 4 + "<br>Destroyed Squares: " + (16 - player1.getHealth()) + "</html>");
         scoreboard2.setText("<html> AirCrafts: " + player2.getNumOfAirCrafts() + "/" + 2 +
                 "<br>Radars: " + player2.getNumOfRadars() + "/" + 4 + "<br>Destroyed Squares: " + (16 - player2.getHealth()) + "</html>");
+        buttons[0].setEnabled(true);
+        if(runner.getState().ordinal()>GameState.TeamBPlaceAntiaircraft.ordinal())
+            buttons[0].setEnabled(false);
+        if(runner.getState()==GameState.TeamAPlaceBattleship || runner.getState()==GameState.TeamBPlaceBattleship)
+            buttons[0].setEnabled(false);
+        if(runner.isNetwork())
+        {
+            if(runner.getMyPlayer().getNumOfRadars()==4)
+                buttons[1].setEnabled(false);
+            if(runner.getMyPlayer().getNumOfAirCrafts()==2)
+                buttons[2].setEnabled(false);
+        }
     }
 }
