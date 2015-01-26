@@ -130,9 +130,10 @@ public class GraphicSquare extends JComponent
                 }
             }
 
-        } else {
-            if (!isMine)
-                return;
+        }
+        else if (isMine &&
+                !(runner.getState().ordinal() > GameState.TeamAPlaceAntiaircraft.ordinal() && getSquare().getOwner() == runner.getTeamA()))
+        {
             g2d.setColor(new Color(153, 230, 255));
             g2d.fillRect(0, 0, SIZE, SIZE);
             if (square.getPlacableWeaponry() instanceof AntiAircraft){

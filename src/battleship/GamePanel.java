@@ -44,14 +44,12 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public void init(Player p1, Player p2, final GraphicRunner runner)
+    public GamePanel(Player p1, Player p2, final GraphicRunner runner)
     {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel1 = new BattleshipPanel();
-        panel1.init(p1, runner);
-        panel2 = new BattleshipPanel();
-        panel2.init(p2, runner);
+        panel1 = new BattleshipPanel(p1, runner);
+        panel2 = new BattleshipPanel(p2, runner);
         int height = p1.getHeight() * GraphicSquare.SIZE;
         menuPanel.setPreferredSize(new Dimension(200, height));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
