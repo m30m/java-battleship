@@ -104,9 +104,13 @@ public class GraphicRunner extends Runner
         });
     }
 
+    /**
+     * Send message to the other player if the game is in network mode and also show the message in the console
+     * @param text the string to send and show
+     */
     public void sendMessaege(String text)
     {
-        if (networkHandler != null)
+        if (isNetwork())
         {
             sendMessage(networkHandler.isTeamA ? teamA : teamB, text);
             MessegeContainer messege = new MessegeContainer();
@@ -117,6 +121,11 @@ public class GraphicRunner extends Runner
             sendMessage(null, text);
     }
 
+    /**
+     * Shows the message in the console
+     * @param player the player who said the message
+     * @param text the content of the message
+     */
     public void sendMessage(Player player, String text)
     {
         String name="";
@@ -279,6 +288,11 @@ public class GraphicRunner extends Runner
         return true;
     }
 
+
+    /**
+     * Broadcasts that the player has clicked on a button and also calls clickedOnButton to handle the logic properly
+     * @param s
+     */
     public void sendClickOnButton(String s)
     {
         if (isNetwork())
@@ -300,7 +314,7 @@ public class GraphicRunner extends Runner
     }
 
     /**
-     * will be called when we click on a button, to decide what to do...
+     * will be called when we click on a button by sendClickedOnButton, to decide what to do...
      * @param s the name of the button
      * @param player the player who clicked on the button
      */
@@ -336,6 +350,11 @@ public class GraphicRunner extends Runner
         gamePanel.repaint();
     }
 
+    /**
+     * Broadcasts that the player has clicked on a square and also calls clickedOnSquare to handle the logic properly
+     * @param graphicSquare the square which is clicked on
+     * @param isRight whether it was a right click or a left click
+     */
     public void sendClickOnSquare(GraphicSquare graphicSquare, boolean isRight)
     {
         Square square = graphicSquare.getSquare();
@@ -473,6 +492,10 @@ public class GraphicRunner extends Runner
         return teamA;
     }
 
+    /**
+     *
+     * @return the player which is working with the current game on the network if network exists, Player A otherwise
+     */
     public Player getMyPlayer()
     {
         if (isNetwork())
@@ -538,6 +561,10 @@ public class GraphicRunner extends Runner
             }
         }
 
+        /**
+         * Sends the object to the networkHandler of the other player
+         * @param object the object to send
+         */
         public void sendObject(Object object)
         {
             try
@@ -549,6 +576,10 @@ public class GraphicRunner extends Runner
             }
         }
 
+        /**
+         * Tries to find the IP suitable to play the game on from different network interfaces installed on the system.
+         * @return a valid ip
+         */
         public String getIP()//Copy pasted from stackoverflow
         {
             String ip = "127.0.0.1";
