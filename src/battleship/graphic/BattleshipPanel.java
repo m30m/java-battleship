@@ -1,5 +1,6 @@
-package battleship;
+package battleship.graphic;
 
+import battleship.Player;
 import battleship.runner.GraphicRunner;
 
 import javax.swing.*;

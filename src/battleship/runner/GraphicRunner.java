@@ -1,6 +1,8 @@
 package battleship.runner;
 
 import battleship.*;
+import battleship.graphic.GamePanel;
+import battleship.graphic.GraphicSquare;
 import battleship.network.ActionContainer;
 import battleship.network.CommandContainer;
 import battleship.network.MessegeContainer;
@@ -164,14 +166,10 @@ public class GraphicRunner extends Runner
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameModes, gameModes[0]);
         if (gameMode == 0)
         {
-//            final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
-//            final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
-            final int width = 10;
-            final int height = 10;
-//            teamA = new Player(JOptionPane.showInputDialog("Player 1 enter your name please"), this, width, height);
-//            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
-            teamA = new Player("Amin", this, width, height);
-            teamB = new Player("Taba", this, width, height);
+            final int width = Integer.parseInt(JOptionPane.showInputDialog("Enter the width of the map please"));
+            final int height = Integer.parseInt(JOptionPane.showInputDialog("Enter the height of the map please"));
+            teamA = new Player(JOptionPane.showInputDialog("Player 1 enter your name please"), this, width, height);
+            teamB = new Player(JOptionPane.showInputDialog("Player 2 enter your name please"), this, width, height);
         }
         else//On network
         {

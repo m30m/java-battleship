@@ -1,5 +1,6 @@
-package battleship;
+package battleship.graphic;
 
+import battleship.*;
 import battleship.runner.GraphicRunner;
 
 import javax.imageio.ImageIO;

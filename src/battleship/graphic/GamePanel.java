@@ -1,5 +1,7 @@
-package battleship;
+package battleship.graphic;
 
+import battleship.GameState;
+import battleship.Player;
 import battleship.runner.GraphicRunner;
 
 import javax.imageio.ImageIO;
@@ -167,7 +169,7 @@ public class GamePanel extends JPanel {
         scoreboard2.setText("<html> AirCrafts: " + player2.getNumOfAirCrafts() + "/" + 2 +
                 "<br>Radars: " + player2.getNumOfRadars() + "/" + 4 + "<br>Destroyed Squares: " + (16 - player2.getHealth()) + "</html>");
         buttons[0].setEnabled(true);
-        if(runner.getState().ordinal()>GameState.TeamBPlaceAntiaircraft.ordinal())
+        if(runner.getState().ordinal()> GameState.TeamBPlaceAntiaircraft.ordinal())
             buttons[0].setEnabled(false);
         if(runner.getState()==GameState.TeamAPlaceBattleship || runner.getState()==GameState.TeamBPlaceBattleship)
             buttons[0].setEnabled(false);
