@@ -1,4 +1,4 @@
-package battleship.console;
+package battleship.runner;
 
 import battleship.*;
 

@@ -1,6 +1,6 @@
 package battleship;
 
-import battleship.console.GraphicRunner;
+import battleship.runner.GraphicRunner;
 
 import javax.swing.*;
 import java.awt.*;

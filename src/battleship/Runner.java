@@ -1,8 +1,6 @@
 package battleship;
 
-import battleship.console.ConsoleRunner;
-import battleship.console.FileRunner;
-import battleship.console.GraphicRunner;
+import battleship.runner.GraphicRunner;
 
 /**
  * Created by amin on 11/29/14.

@@ -1,4 +1,4 @@
-package battleship.console;
+package battleship.runner;
 
 import battleship.*;
 import battleship.network.ActionContainer;
@@ -119,7 +119,16 @@ public class GraphicRunner extends Runner
 
     public void sendMessage(Player player, String text)
     {
-        gamePanel.addStatus((player != null ? player.getName() + ": " : "") + text);
+        String name="";
+        if(player!=null)
+        {
+            if(player==getMyPlayer())
+                name="You";
+            else
+                name=player.getName();
+            name+=": ";
+        }
+        gamePanel.addStatus(name + text);
     }
 
     public boolean isNetwork()

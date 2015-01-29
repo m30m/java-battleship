@@ -1,4 +1,4 @@
-package battleship.console;
+package battleship.runner;
 
 import battleship.Player;
 import battleship.Runner;
@@ -113,7 +113,7 @@ abstract public class TextRunner extends Runner
 
     }
 
-    //Reporting events to console:
+    //Reporting events to runner:
 
     public void mineTrap(Player player, int x, int y)
     {

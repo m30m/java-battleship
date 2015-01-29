@@ -1,4 +1,4 @@
-package battleship.console;
+package battleship.runner;
 
 import battleship.AntiAircraft;
 import battleship.Battleship;
@@ -20,7 +20,7 @@ public class FileRunner extends TextRunner
     protected void run()
     {
         if (file_path == null)
-            file_path = "src/battleship/console/sample_map.txt";
+            file_path = "src/battleship/runner/sample_map.txt";
         Scanner scanner;
         try
         {
